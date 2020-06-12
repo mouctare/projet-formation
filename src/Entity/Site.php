@@ -2,13 +2,22 @@
 
 namespace App\Entity;
 
-use App\Repository\SiteRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\SiteRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=SiteRepository::class)
+ * @ApiResource(
+ *  normalizationContext={
+ *   "groups"={"sites_read"}
+ * } 
+ * )
  */
 class Site
 {
@@ -16,46 +25,56 @@ class Site
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"sites_read","plannings_read","reports_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"sites_read","plannings_read","reports_read"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"sites_read","plannings_read","reports_read"})
      */
     private $streetNumber;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"sites_read","plannings_read","reports_read"})
      */
     private $streetName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"sites_read","plannings_read","reports_read"})
      */
     private $buildingName;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"sites_read","plannings_read","reports_read"})
      */
     private $postCode;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"sites_read","plannings_read","reports_read"})
      */
     private $city;
 
     /**
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="site")
+     * @Groups({"sites_read"})
+     * 
      */
     private $reports;
 
     /**
      * @ORM\OneToMany(targetEntity=Planning::class, mappedBy="site")
+     * @Groups({"sites_read"})
      */
     private $plannings;
 

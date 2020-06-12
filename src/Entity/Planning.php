@@ -2,11 +2,23 @@
 
 namespace App\Entity;
 
-use App\Repository\PlanningRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PlanningRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=PlanningRepository::class)
+ * @ApiResource(
+ *  normalizationContext={
+ *   "groups"={"plannings_read"}
+ * } 
+ * )
+ * @ApiFilter(SearchFilter::class)
+ * @ApiFilter(OrderFilter::class)
  */
 class Planning
 {
@@ -14,32 +26,32 @@ class Planning
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"plannings_read","users_read","sites_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"plannings_read","users_read","sites_read"})
      */
     private $dateStart;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"plannings_read","users_read","sites_read"})
      */
     private $dateEnd;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="plannings")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"plannings_read"})
      */
     private $user;
 
-    /**
-     * @ORM\Column(type="string", length=1000, nullable=true)
-     */
-    private $image;
-
-    /**
+     /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="plannings")
+     *  @Groups({"plannings_read"})
      */
     private $site;
 
@@ -84,19 +96,7 @@ class Planning
         return $this;
     }
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
-
-    public function getSite(): ?Site
+     public function getSite(): ?Site
     {
         return $this->site;
     }

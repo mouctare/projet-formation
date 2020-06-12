@@ -2,26 +2,46 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ApiResource(
+ *   normalizationContext={
+ *   "groups"={"users_read"}
+ * } ,
+ *  attributes={
+ *      "pagination_enabled"=true,
+ *      "pagination_items_per_page"=20 
+ * }
+ * )
+ * @ApiFilter(SearchFilter::class)
+ * @ApiFilter(OrderFilter::class)
  */
+ 
 class User implements UserInterface
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
      */
     private $email;
 
@@ -38,36 +58,43 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=1000)
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
      */
     private $cardPro;
 
     /**
      * @ORM\OneToMany(targetEntity=Availability::class, mappedBy="user")
+     * @Groups({"users_read"})
      */
     private $availabilities;
 
     /**
      * @ORM\OneToMany(targetEntity=Planning::class, mappedBy="user")
+     * @Groups({"users_read"})
      */
     private $plannings;
 
     /**
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="user")
+     * @Groups({"users_read"})
      */
     private $reports;
 
     /**
      * @ORM\OneToMany(targetEntity=Service::class, mappedBy="user")
+     *  @Groups({"users_read"})
      */
     private $services;
 

@@ -2,11 +2,23 @@
 
 namespace App\Entity;
 
-use App\Repository\AvailabilityRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AvailabilityRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 
 /**
  * @ORM\Entity(repositoryClass=AvailabilityRepository::class)
+ * @ApiResource(
+ *  normalizationContext={
+ *   "groups"={"availabilities_read"}
+ * } 
+ * )
+ * @ApiFilter(OrderFilter::class, properties={"start", "dateEnd"})
  */
 class Availability
 {
@@ -14,22 +26,27 @@ class Availability
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"availabilities_read","users_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"availabilities_read","users_read"})
+     * 
      */
     private $startDate;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"availabilities_read","users_read"})
      */
     private $dateEnd;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="availabilities")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"availabilities_read"})
      */
     private $user;
 
