@@ -14,7 +14,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=AvailabilityRepository::class)
  * @ApiResource(
- *  normalizationContext={
+ *   collectionOperations={"GET"={"path"="/disponibilites"}, "POST"={"path"="/disponibilites"}},
+ *    itemOperations={"GET"={"path"="/disponibilites/{id}"}, "PUT"={"path"="/disponibilites/{id}"}, "DELETE"={"path"="/disponibilites/{id}"}},
+ *    normalizationContext={
  *   "groups"={"availabilities_read"}
  * } 
  * )

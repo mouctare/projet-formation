@@ -7,6 +7,7 @@ use App\Repository\SiteRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -14,6 +15,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=SiteRepository::class)
  * @ApiResource(
+ *   collectionOperations={"GET"={"path"="/sites"}, "POST"={"path"="/sites"}},
+ *    itemOperations={"GET"={"path"="/sites/{id}"}, "PUT"={"path"="/sites/{id}"}, "DELETE"={"path"="/sites/{id}"}},
+ *    subresourceOperations={
+ *        "reports_get_subresource"={"path"="/sites/{id}/rapports"},
+ *        "plannings_get_subresource"={"path"="/sites/{id}/plannings"},
+ * },
  *  normalizationContext={
  *   "groups"={"sites_read"}
  * } 
@@ -68,6 +75,7 @@ class Site
     /**
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="site")
      * @Groups({"sites_read"})
+     * @ApiSubresource
      * 
      */
     private $reports;
@@ -75,6 +83,7 @@ class Site
     /**
      * @ORM\OneToMany(targetEntity=Planning::class, mappedBy="site")
      * @Groups({"sites_read"})
+     * @ApiSubresource
      */
     private $plannings;
 

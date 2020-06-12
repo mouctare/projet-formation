@@ -13,6 +13,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=ReportRepository::class)
  * @ApiResource(
+ *    collectionOperations={"GET"={"path"="/rapports"}, "POST"={"path"="/rapports"}},
+ *    itemOperations={"GET"={"path"="/rappports/{id}"},  "DELETE"={"path"="/rapports/{id}"}},
  *  normalizationContext={
  *   "groups"={"reports_read"}
  * } 
