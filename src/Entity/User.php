@@ -20,6 +20,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @ApiResource(
  *   collectionOperations={"GET"={"path"="/agents"}, "POST"={"path"="/agents"}},
  *    itemOperations={"GET"={"path"="/agents/{id}"}, "PUT"={"path"="/agents/{id}"}, "DELETE"={"path"="/agents/{id}"}},
+ *    subresourceOperations={
+ *        "availabilities_get_subresource"={"path"="/agents/{id}/disponibilites"},
+ *        "reports_get_subresource"={"path"="/agents/{id}/rapports"},
+ *        "plannings_get_subresource"={"path"="/agents/{id}/plannings"},
+ *        "services_get_subresource"={"path"="/agents/{id}/services"}
+ *  },
  *    normalizationContext={
  *   "groups"={"users_read"}
  * } ,
@@ -111,17 +117,6 @@ class User implements UserInterface
         $this->plannings = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->services = new ArrayCollection();
-    }
-
-     /**
-      *  Permet de récuperer le total des plannings
-     * @Groups({"users_read"})
-      */
-    public function getTotalPlannings($planning): int {
-        return array_count_values($this->plannings->toArray(),function($total,$planning){
-            return $total + $planning->getTotalPlannings();
-        }, 0);
-
     }
 
     public function getId(): ?int
