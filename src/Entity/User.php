@@ -17,6 +17,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
+ *   collectionOperations={"GET", "POST"},
+ *    itemOperations={"GET", "PUT", "DELETE"}, 
+ *        // Les collections oprations nous permettent de décider quelles sont les opérations qu'on va autoriser
+ *         // Dans notre application
  *   normalizationContext={
  *   "groups"={"users_read"}
  * } ,
