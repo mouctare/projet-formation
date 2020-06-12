@@ -4,12 +4,13 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Core\Annotation\ApiFilter;
+use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
@@ -17,11 +18,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
- *   collectionOperations={"GET", "POST"},
- *    itemOperations={"GET", "PUT", "DELETE"}, 
- *        // Les collections oprations nous permettent de décider quelles sont les opérations qu'on va autoriser
- *         // Dans notre application
- *   normalizationContext={
+ *   collectionOperations={"GET"={"path"="/agents"}, "POST"={"path"="/agents"}},
+ *    itemOperations={"GET"={"path"="/agents/{id}"}, "PUT"={"path"="/agents/{id}"}, "DELETE"={"path"="/agents/{id}"}},
+ *    normalizationContext={
  *   "groups"={"users_read"}
  * } ,
  *  attributes={
@@ -81,24 +80,28 @@ class User implements UserInterface
     /**
      * @ORM\OneToMany(targetEntity=Availability::class, mappedBy="user")
      * @Groups({"users_read"})
+     * @ApiSubresource
      */
     private $availabilities;
 
     /**
      * @ORM\OneToMany(targetEntity=Planning::class, mappedBy="user")
      * @Groups({"users_read"})
+     * @ApiSubresource
      */
     private $plannings;
 
     /**
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="user")
      * @Groups({"users_read"})
+     * @ApiSubresource
      */
     private $reports;
 
     /**
      * @ORM\OneToMany(targetEntity=Service::class, mappedBy="user")
-     *  @Groups({"users_read"})
+     * @Groups({"users_read"})
+     * @ApiSubresource
      */
     private $services;
 
@@ -108,6 +111,17 @@ class User implements UserInterface
         $this->plannings = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->services = new ArrayCollection();
+    }
+
+     /**
+      *  Permet de récuperer le total des plannings
+     * @Groups({"users_read"})
+      */
+    public function getTotalPlannings($planning): int {
+        return array_count_values($this->plannings->toArray(),function($total,$planning){
+            return $total + $planning->getTotalPlannings();
+        }, 0);
+
     }
 
     public function getId(): ?int
