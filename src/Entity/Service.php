@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -33,12 +34,16 @@ class Service
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"services_read","users_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de  prise de service est obligatoire doire ")
      */
     private $dateStart;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"services_read","users_read"})
+     * @Assert\NotBlank(message="Le type de service est obligatoire ")
+     * @Assert\Choice(choices={"PRISE DE SERVICE","FIN DE SERVICE"}, message="Le type de service doit etre PRISE DE SERVICE  ou FIN DE SERVICE"))
      */
     private $typeService;
 

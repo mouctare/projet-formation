@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -35,6 +36,8 @@ class Availability
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"availabilities_read","users_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date d'indisponibilité doit etre renseignée ")
      * 
      */
     private $startDate;
@@ -42,6 +45,8 @@ class Availability
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"availabilities_read","users_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de  d'indisponibilité doit etre renseignée ")
      */
     private $dateEnd;
 
@@ -62,7 +67,7 @@ class Availability
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeInterface $startDate): self
+    public function setStartDate($startDate): self
     {
         $this->startDate = $startDate;
 
@@ -74,7 +79,7 @@ class Availability
         return $this->dateEnd;
     }
 
-    public function setDateEnd(\DateTimeInterface $dateEnd): self
+    public function setDateEnd($dateEnd): self
     {
         $this->dateEnd = $dateEnd;
 

@@ -11,6 +11,7 @@ use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=SiteRepository::class)
@@ -21,9 +22,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *        "reports_get_subresource"={"path"="/sites/{id}/rapports"},
  *        "plannings_get_subresource"={"path"="/sites/{id}/plannings"},
  * },
- *  normalizationContext={
- *   "groups"={"sites_read"}
- * } 
+ *  normalizationContext={ "groups"={"sites_read"}},
+ *  denormalizationContext={"disable_type_enforcement"=true}
  * )
  */
 class Site
@@ -39,18 +39,23 @@ class Site
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Assert\NotBlank(message="Le nom du site est obligatiore !")
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Assert\Type(type="integer", message="Le numero de rue doit etre un nombre !")
+     * @Assert\NotBlank(message="Le numero de  rue du site est obligatiore !")
+     * 
      */
     private $streetNumber;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Assert\NotBlank(message="Le nom de  rue du site est obligatiore !")
      */
     private $streetName;
 
@@ -63,12 +68,16 @@ class Site
     /**
      * @ORM\Column(type="integer")
      * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Assert\NotBlank(message="Le code postal de la ville du site est obligatiore !")
+     * @Assert\Type(type="integer", message="Le code postal de la ville  du site doit etre un nombre!")
      */
     private $postCode;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"sites_read","plannings_read","reports_read"})
+     *  @Assert\NotBlank(message="La ville du site est obligatiore !")
+     * 
      */
     private $city;
 
@@ -115,7 +124,7 @@ class Site
         return $this->streetNumber;
     }
 
-    public function setStreetNumber(int $streetNumber): self
+    public function setStreetNumber($streetNumber): self
     {
         $this->streetNumber = $streetNumber;
 
@@ -151,7 +160,7 @@ class Site
         return $this->postCode;
     }
 
-    public function setPostCode(int $postCode): self
+    public function setPostCode($postCode): self
     {
         $this->postCode = $postCode;
 
