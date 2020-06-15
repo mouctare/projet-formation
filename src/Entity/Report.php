@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ReportRepository::class)
@@ -32,24 +33,30 @@ class Report
 
     /**
      * @ORM\Column(type="string", length=255)
-     *  @Groups({"reports_read","users_read","sites_read"})
+     * @Groups({"reports_read","users_read","sites_read"})
+     * @Assert\NotBlank(message="Le titre du rapport doit etre renseigné ! ")
+     * @Assert\Choice(choices={"RAPPORT COURANT","RAPPORT D'ICIDENT"}, message="Le titre du rapport doit etre RAPPORT COURANT  ou RAPPORT D'ICIDENT"))
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
-     *  @Groups({"reports_read","users_read","sites_read"})
+     * @Groups({"reports_read","users_read","sites_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de création du rapport  doit etre renseignée ")
      */
     private $createdAt;
 
     /**
-     * @ORM\Column(type="text")
-     *  @Groups({"reports_read","users_read","sites_read","users_read"})
+     * @ORM\Column(type="text" , nullable=false)
+     * @Groups({"reports_read","users_read","sites_read","users_read"})
+     * @Assert\NotBlank(message="Le rapport doit avoir un minumum de description !")
      */
     private $description;
      /**
      * @ORM\Column(type="string", length=1000, nullable=true)
-     *  @Groups({"reports_read","sites_read"})
+     * @Groups({"reports_read","sites_read"})
+     * @Assert\Url(message = "L'image doit avoir un format de type url")
      */
     private $image;
 
@@ -88,7 +95,7 @@ class Report
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt($createdAt): self
     {
         $this->createdAt = $createdAt;
 

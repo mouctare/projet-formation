@@ -9,7 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=PlanningRepository::class)
  * @ApiResource(
@@ -33,12 +33,16 @@ class Planning
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"plannings_read","users_read","sites_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de prise service  doit etre renseignée ")
      */
     private $dateStart;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"plannings_read","users_read","sites_read"})
+     *  @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date fin de service  doit etre renseignée ")
      */
     private $dateEnd;
 
@@ -65,7 +69,7 @@ class Planning
         return $this->dateStart;
     }
 
-    public function setDateStart(\DateTimeInterface $dateStart): self
+    public function setDateStart($dateStart): self
     {
         $this->dateStart = $dateStart;
 
@@ -77,7 +81,7 @@ class Planning
         return $this->dateEnd;
     }
 
-    public function setDateEnd(\DateTimeInterface $dateEnd): self
+    public function setDateEnd($dateEnd): self
     {
         $this->dateEnd = $dateEnd;
 
