@@ -27,7 +27,7 @@ public static function getSubscribedEvents()
     public function encodePassword(ViewEvent $event):void
     {    
         $user = $event->getControllerResult();
-      //  dd($user);
+       // dd($user);
         $method = $event->getRequest()->getMethod(); // POST, GET, PUT, ...
         if ($user instanceof User && $method === "POST") 
         {
