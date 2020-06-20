@@ -64,12 +64,15 @@ class Report
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="reports")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"reports_read"})
+     * @Assert\NotBlank(message="L'utilisateur  est obligatoire")
+     * 
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="reports")
-     *  @Groups({"reports_read"})
+     * @Groups({"reports_read"})
+     * @Assert\NotBlank(message="Le nom du site   est obligatoire")
      */
     private $site;
 

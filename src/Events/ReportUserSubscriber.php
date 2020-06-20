@@ -36,6 +36,9 @@ class ReportUserSubscriber implements EventSubscriberInterface
          $user = $this->security->getUser();
     // Assigner l'utisateur aux disponibilité qu'il vient de créer
         $reports->setUser($user);
+        if(empty($reports->getCreatedAt())) {
+            $reports->setCreatedAt(new \DateTime());
+        }
            // Attention cette fonction va etre applé à chaque requette donc il faut préciser la methode pour stopper les apppelles
           //dd($user);
        }

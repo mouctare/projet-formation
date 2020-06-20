@@ -54,6 +54,7 @@ class Availability
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="availabilities")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"availabilities_read"})
+     * @Assert\NotBlank(message="L'utilisateur  est obligatoire")
      */
     private $user;
 

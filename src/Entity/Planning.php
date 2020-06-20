@@ -41,23 +41,33 @@ class Planning
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"plannings_read","users_read","sites_read"})
-     *  @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\Type(type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de service  doit etre renseignée ")
      */
     private $dateEnd;
 
     /**
+     * @ORM\Column(type="datetime")
+     * @Groups({"plannings_read","users_read","sites_read"})
+     * @Assert\Type(type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date fin de mise à jour du planning   doit etre renseignée ")
+    */
+    private $updatedAt;
+   /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="plannings")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"plannings_read"})
+     * @Assert\NotBlank(message="L'utilisateur  est obligatoire")
      */
     private $user;
-
-     /**
+    /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="plannings")
-     *  @Groups({"plannings_read"})
+     * @Groups({"plannings_read"})
+     * @Assert\NotBlank(message="Le nom du site est obligatoire")
      */
     private $site;
+
+    
 
     public function getId(): ?int
     {
@@ -108,6 +118,18 @@ class Planning
     public function setSite(?Site $site): self
     {
         $this->site = $site;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt($updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
