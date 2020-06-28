@@ -19,8 +19,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
- *   collectionOperations={"GET"={"path"="/agents"}, "POST"={"path"="/agents"}},
- *    itemOperations={"GET"={"path"="/agents/{id}"}, "PUT"={"path"="/agents/{id}"}, "DELETE"={"path"="/agents/{id}"}},
+ * 
+ * collectionOperations={ 
+ *          "GET"={"path"="/agents"},
+ *            "POST"={"path"="/agents", "security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *            "checkCartePro"={"method"="post", "path"="/agents/checkCartePro", "controller"="App\Controller\UserFilterCarteProController"},
+ *             
+ *  },
+ *                        
+ *    itemOperations={
+ *          "GET"={"path"="/agents/{id}"}, 
+ *          "PUT"={"path"="/agents/{id}", "security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "DELETE"={"path"="/agents/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          
+ *          
+ * },
+ * 
  *    subresourceOperations={
  *        "availabilities_get_subresource"={"path"="/agents/{id}/disponibilites"},
  *        "reports_get_subresource"={"path"="/agents/{id}/rapports"},
@@ -163,7 +177,7 @@ class User implements UserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = Null;
 
         return array_unique($roles);
     }
@@ -309,7 +323,7 @@ class User implements UserInterface
      * @return Collection|Report[]
      */
     public function getReports(): Collection
-    {
+    {        
         return $this->reports;
     }
 
