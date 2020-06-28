@@ -29,7 +29,7 @@ public static function getSubscribedEvents()
         $user = $event->getControllerResult();
        // dd($user);
         $method = $event->getRequest()->getMethod(); // POST, GET, PUT, ...
-        if ($user instanceof User && $method === "POST") 
+        if ($user instanceof User && $method === "POST" || $method === "PUT") 
         {
             $hash = $this->encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($hash);
