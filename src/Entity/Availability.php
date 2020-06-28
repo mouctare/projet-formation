@@ -15,8 +15,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=AvailabilityRepository::class)
  * @ApiResource(
- *   collectionOperations={"GET"={"path"="/disponibilites"}, "POST"={"path"="/disponibilites"}},
- *    itemOperations={"GET"={"path"="/disponibilites/{id}"}, "PUT"={"path"="/disponibilites/{id}"}, "DELETE"={"path"="/disponibilites/{id}"}},
+ *   collectionOperations={ 
+ *          "GET"={"path"="/disponiblites"},
+*            "POST"={"path"="/disponibilites", "security"="is_granted('ROLE_USER')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"}
+ *  },
+ *                        
+ *    itemOperations={
+ *          "GET"={"path"="/disponibilites/{id}"}, 
+ *          "PUT"={"path"="/disponibilites/{id}","security"="is_granted('ROLE_USER')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "DELETE"={"path"="/disponibilites/{id}"}
+ * },
+
+ *                               
  *    normalizationContext={
  *   "groups"={"availabilities_read"}
  * } 

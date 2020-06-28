@@ -14,8 +14,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=ReportRepository::class)
  * @ApiResource(
- *    collectionOperations={"GET"={"path"="/rapports"}, "POST"={"path"="/rapports"}},
- *    itemOperations={"GET"={"path"="/rappports/{id}"},  "DELETE"={"path"="/rapports/{id}"}},
+ *    collectionOperations={ "GET"={"path"="/rapports"},
+ *                         "POST"={"path"="/rapports", "security"="is_granted('ROLE_USER')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *                        
+ *                         
+ * },
+ *    itemOperations={"GET"={"path"="/rappports/{id}"},  
+ * },
  *  normalizationContext={
  *   "groups"={"reports_read"}
  * } 

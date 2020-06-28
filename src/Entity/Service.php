@@ -15,6 +15,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=ServiceRepository::class)
  * @ApiResource(
+ *  collectionOperations={"GET"={"path"="/services"},
+ *                        "POST"={"path"="/services", "security"="is_granted('ROLE_USER')", "security_message"="Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *                         
+ * },
+ *    itemOperations={"GET"={"path"="/rappports/{id}"},  
+ * 
+ * },
  *  normalizationContext={
  *   "groups"={"services_read"}
  * } 
@@ -84,7 +91,7 @@ class Service
         return $this->dateStart;
     }
 
-    public function setDateStart(\DateTimeInterface $dateStart): self
+    public function setDateStart($dateStart): self
     {
         $this->dateStart = $dateStart;
 

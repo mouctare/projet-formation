@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Doctrine;
+use App\Entity\User;
+use App\Entity\Report;
+use App\Entity\Service;
 use App\Entity\Planning;
+use App\Entity\Availability;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Security;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
@@ -27,18 +31,23 @@ class CurrentUserExtension implements QueryCollectionExtensionInterface, QueryIt
 
         // 2. si on demande des plannings alors agir sur la requete pour qu'elle tienne 
        // compte de l'utilisateur connecté
-       if(($resourceClass === Planning::class) && !$this->auth->isGranted('ROLE_ADMIN')){
+       if(
+           ($resourceClass === Planning::class || $resourceClass === Report::class || $resourceClass === Availability::class || $resourceClass === Service::class) && 
+           !$this->auth->isGranted('ROLE_ADMIN')
+           &&  $user instanceof User
+        )
+        {
            // Ici , on cherche à choper l'alias o indiqué dans le dd et vue que ça peut etre plusiers alias on met au pluriels
            // RootAliases puisqu'il nous renvoit un tableau on prend le premier qui est l'index 0
            $rootAlias = $queryBuilder->getRootAliases()[0];
  
-           if($resourceClass === Planning::class) {
+           if($resourceClass === Planning::class || $resourceClass === Report::class || $resourceClass === Availability::class || $resourceClass === Service::class ) {
                $queryBuilder->andWhere("$rootAlias.user = :user");
            }
  
            $queryBuilder->setParameter("user", $user);
            // ce $user, c'est le user récupérer dans security->getUser()
-          // dd($queryBuilder);
+    //           dd($queryBuilder);
          // dd($rootAlias);
        }
     }

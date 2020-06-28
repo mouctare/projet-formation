@@ -13,6 +13,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=PlanningRepository::class)
  * @ApiResource(
+ * 
+ *    collectionOperations={ 
+ *          "GET"={"path"="/plannings"},
+ *            "POST"={"path"="/plannings", "security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *             
+ *  },
+ *                        
+ *    itemOperations={
+ *          "GET"={"path"="/plannings/{id}"}, 
+ *          "PUT"={"path"="/plannings/{id}", "security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "DELETE"={"path"="/plannings/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          
+ * },
+ * 
  *  normalizationContext={
  *   "groups"={"plannings_read"}
  * } 
@@ -41,33 +55,32 @@ class Planning
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"plannings_read","users_read","sites_read"})
-     * @Assert\Type(type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     *  @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de service  doit etre renseignée ")
      */
     private $dateEnd;
 
-    /**
+     /**
      * @ORM\Column(type="datetime")
      * @Groups({"plannings_read","users_read","sites_read"})
      * @Assert\Type(type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de mise à jour du planning   doit etre renseignée ")
     */
     private $updatedAt;
-   /**
+
+    /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="plannings")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"plannings_read"})
-     * @Assert\NotBlank(message="L'utilisateur  est obligatoire")
      */
+
     private $user;
-    /**
+
+     /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="plannings")
-     * @Groups({"plannings_read"})
-     * @Assert\NotBlank(message="Le nom du site est obligatoire")
+     *  @Groups({"plannings_read"})
      */
     private $site;
-
-    
 
     public function getId(): ?int
     {
