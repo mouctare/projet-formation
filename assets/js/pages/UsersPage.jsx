@@ -1,5 +1,6 @@
 import React, { useEffect, useState} from "react";
 import axios from "axios";
+import Pagination from "../components/Pagination";
 
 
 const UsersPage = props => {
@@ -12,8 +13,6 @@ const UsersPage = props => {
         .then(response => response.data['hydra:member'])
         .then(data => setUsers(data))
         .catch(error => console.log(error.response));
-        
-
     }, []);
 
     const handleDelete = id => {
@@ -40,17 +39,12 @@ const UsersPage = props => {
      }
 
      const itemsPerPage = 10;
-     // Arondir à moitié sup
-     const pagesCount = Math.ceil(users.length / itemsPerPage);
-     const pages = [];
+     const paginatedUsers = Pagination.getData(
+       users,
+       currentPage, 
+       itemsPerPage
 
-     for(let i = 1; i <= pagesCount; i++) {
-       pages.push(i);
-     }
-     
-     // d'ou on part (start) pendant combien (itemsPerPage)
-     const start = currentPage * itemsPerPage - itemsPerPage;
-     const paginatedUsers = users.slice(start, start + itemsPerPage);
+      );
  
     return (
     <>
@@ -98,40 +92,14 @@ const UsersPage = props => {
           </tbody>
     </table>
 
-   <Pagination currentPage={currentPage}  itemsPerPage={itemsPerPage} length={users.length}
-   onPageChanged={handlePageChange}/> 
-
-    <div>
-      <ul className="pagination pagination-sm">
-          <li className={"page-item" + ( currentPage === 1 && " disabled")}>
-      <button className="page-link" 
-      onClick={() => handlePageChange(currentPage - 1)}> 
-       &laquo;
-        </button>
-    </li>
-    {pages.map(page => ( 
-       <li key={page} className={"page-item" + (currentPage === page && " active")}
-      >
-          <button className="page-link" 
-           onClick={() => handlePageChange(page)}
-           > 
-          {page}
-        </button>
-    </li>
-    ))}
-   
-    <li className={"page-item" + ( currentPage === pagesCount && " disabled")}>
-      <button className="page-link"
-      onClick={() => handlePageChange(currentPage + 1)}
-      > 
-      
-        &raquo;
-        </button>
-    </li>
-  </ul>
-</div>
-    </>
-    );
+   <Pagination 
+   currentPage={currentPage}  
+   itemsPerPage={itemsPerPage} 
+   length={users.length}
+   onPageChanged={handlePageChange}
+   /> 
+   </>
+ );
 };
  
 export default UsersPage;
