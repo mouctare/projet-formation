@@ -47,8 +47,11 @@ const UsersPage = props => {
      for(let i = 1; i <= pagesCount; i++) {
        pages.push(i);
      }
-     console.log(pages);
-
+     
+     // d'ou on part (start) pendant combien (itemsPerPage)
+     const start = currentPage * itemsPerPage - itemsPerPage;
+     const paginatedUsers = users.slice(start, start + itemsPerPage);
+ 
     return (
     <>
         <h1> Liste des agents</h1>
@@ -70,7 +73,7 @@ const UsersPage = props => {
       </thead>
 
       <tbody>
-        {users.map(user => 
+        {paginatedUsers.map(user => 
            <tr key={user.id}>
               <td>{user.id}</td>
               <td>
@@ -94,6 +97,9 @@ const UsersPage = props => {
               </tr>)}
           </tbody>
     </table>
+
+   <Pagination currentPage={currentPage}  itemsPerPage={itemsPerPage} length={users.length}
+   onPageChanged={handlePageChange}/> 
 
     <div>
       <ul className="pagination pagination-sm">
