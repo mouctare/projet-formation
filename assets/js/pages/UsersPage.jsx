@@ -5,6 +5,7 @@ import axios from "axios";
 const UsersPage = props => {
 
     const [users, setUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         axios.get("http://localhost:8000/api/agents")
@@ -14,6 +15,40 @@ const UsersPage = props => {
         
 
     }, []);
+
+    const handleDelete = id => {
+     // Ceci est un mixe des deux approche pour la suppréssion
+     const originalUsers = [...users];
+
+     // 1. L'approche optimiste
+     setUsers(users.filter(user => user.id !==id));
+
+     // 2. l'approche pessimiste
+     axios
+     .delete("http://localhost:8000/api/agents/" + id)
+     .then(response => console.log("ok"))
+     .catch(error => {
+       // Si ça na pas marché je veut remettre mon tableau original
+       setUsers(originalUsers);
+      console.log(error.response);
+    });
+     
+     };
+
+     const handlePageChange = (page) => {
+      setCurrentPage(page);
+     }
+
+     const itemsPerPage = 10;
+     // Arondir à moitié sup
+     const pagesCount = Math.ceil(users.length / itemsPerPage);
+     const pages = [];
+
+     for(let i = 1; i <= pagesCount; i++) {
+       pages.push(i);
+     }
+     console.log(pages);
+
     return (
     <>
         <h1> Liste des agents</h1>
@@ -30,7 +65,7 @@ const UsersPage = props => {
           <th>Disponibilités</th>
           <th>Rapports</th>
           <th>Services</th>
-          <th></th>
+          
       </tr>
       </thead>
 
@@ -42,21 +77,53 @@ const UsersPage = props => {
                 <a href="#">{user.firstName} {user.lastName}</a>
               </td>
               <td>{user.email}</td>
-              <td>
-                 <span className="badge badge-primary">{user.cardPro}</span> 
-               </td>
+              <td>{user.cardPro}</td>
               <td>{user.availabilities.length}</td>
               <td>{user.plannings.length}</td>
               <td>{user.reports.length}</td>
               <td>{user.services.length}</td>
              <td>
-                 <button className="btn btn-sm btn-danger">Supprimer</button> 
+                 <button 
+                 onClick={() => handleDelete(user.id)}
+                 disabled={user.plannings.length > 0}
+                 className="btn btn-sm btn-danger"
+                 >
+                   Supprimer
+                   </button> 
               </td>
-              
-          </tr>)}
-         
-      </tbody>
+              </tr>)}
+          </tbody>
     </table>
+
+    <div>
+      <ul className="pagination pagination-sm">
+          <li className={"page-item" + ( currentPage === 1 && " disabled")}>
+      <button className="page-link" 
+      onClick={() => handlePageChange(currentPage - 1)}> 
+       &laquo;
+        </button>
+    </li>
+    {pages.map(page => ( 
+       <li key={page} className={"page-item" + (currentPage === page && " active")}
+      >
+          <button className="page-link" 
+           onClick={() => handlePageChange(page)}
+           > 
+          {page}
+        </button>
+    </li>
+    ))}
+   
+    <li className={"page-item" + ( currentPage === pagesCount && " disabled")}>
+      <button className="page-link"
+      onClick={() => handlePageChange(currentPage + 1)}
+      > 
+      
+        &raquo;
+        </button>
+    </li>
+  </ul>
+</div>
     </>
     );
 };
