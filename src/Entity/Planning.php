@@ -60,6 +60,14 @@ class Planning
      */
     private $dateEnd;
 
+      /**
+     * @ORM\Column(type="datetime")
+     * @Groups({"reports_read","users_read","sites_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de création du rapport  doit etre renseignée ")
+     */
+    private $createdAt;
+
      /**
      * @ORM\Column(type="datetime")
      * @Groups({"plannings_read","users_read","sites_read"})
@@ -82,7 +90,8 @@ class Planning
      */
     private $site;
 
-    public function getId(): ?int
+   
+     public function getId(): ?int
     {
         return $this->id;
     }
@@ -143,6 +152,18 @@ class Planning
     public function setUpdatedAt($updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt($createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

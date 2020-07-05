@@ -1,12 +1,18 @@
 import React from "react";
+import logo from '../logo.jpg';
 
 
 
  const Navbar = props => {
     return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-    <a className="navbar-brand" href="#">
-        Gestion du personnel !
+    <nav className="navbar navbar-expand-sm bg-primary navbar-dark
+    navbar-dark px-sm-5">
+      <img src={logo} alt="La sécurité est notre metier"  width="10%"
+      
+      />
+      
+     <a className="navbar-brand" href="#">
+             Gestion du personnel 
         </a>
     <button 
         className="navbar-toggler" 
@@ -24,14 +30,20 @@ import React from "react";
       <ul className="navbar-nav mr-auto">
        <li className="nav-item">
           <a className="nav-link" href="#">
-              Agents
+          Accueil 
             </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">  A propos</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">Agents</a>
         </li>
         <li className="nav-item">
           <a className="nav-link" href="#">Plannings</a>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">Disponibiltés</a>
+          <a className="nav-link" href="#">Idisponibiltés</a>
         </li>
         <li className="nav-item">
           <a className="nav-link" href="#">Services</a>
@@ -51,14 +63,12 @@ import React from "react";
 
              </li>
           <li className="nav-item">
-              <a href="#" className="btn btn-success">
-                  Connexion !
-             </a>
+              <a href="#" className="btn btn-success">Connexion !
+              </a>
              </li>
              <li className="nav-item">
-              <a href="#" className="btn btn-danger">
-                  Déconnexion !
-             </a>
+              <a href="#" className="btn btn-danger">Déconnexion !
+              </a>
              </li>
         </ul>
      </div>

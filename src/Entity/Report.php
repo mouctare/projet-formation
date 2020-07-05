@@ -40,7 +40,7 @@ class Report
      * @ORM\Column(type="string", length=255)
      * @Groups({"reports_read","users_read","sites_read"})
      * @Assert\NotBlank(message="Le titre du rapport doit etre renseigné ! ")
-     * @Assert\Choice(choices={"RAPPORT COURANT","RAPPORT D'ICIDENT"}, message="Le titre du rapport doit etre RAPPORT COURANT  ou RAPPORT D'ICIDENT"))
+     * @Assert\Choice(choices={"COURANT","INCIDENT"}, message="Le titre du rapport doit etre  COURANT  ou ICIDENT"))
      */
     private $title;
 

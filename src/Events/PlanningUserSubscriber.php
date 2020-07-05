@@ -48,6 +48,9 @@ class PlanningUserSubscriber implements EventSubscriberInterface
         if(empty($plannings->getUpdatedAt())) {
           $plannings->setUpdatedAt(new \DateTime());
       }
+      if(empty($plannings->getCreatedAt())) {
+        $plannings->setCreatedAt(new \DateTime());
+    }
            // Attention cette fonction va etre applé à chaque requette donc il faut préciser la methode pour stopper les apppelles
           //dd($user);
        }

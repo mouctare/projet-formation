@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
-import UsersAPI from "../services/UsersAPI";
+import FormatDateAPI from "../services/FormatDateAPI";
+import usersAPI from "../services/UsersAPI";
 
 
 const UsersPage = props => {
@@ -9,48 +10,46 @@ const UsersPage = props => {
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
 
+    // Permet d'aller récupérer les agents
+    const fetchUsers = async () => {
+      try {
+        const data = await usersAPI.findAll()
+        setUsers(data);
+      } catch(error) {
+        console.log(error.response)
+      }
+    };
+   // Au chargement du composant, on va chercher les agents
     useEffect(() => {
-       UsersAPI.findAll()
-        .then(data => setUsers(data))
-        .catch(error => console.log(error.response));
-    }, []);
+      fetchUsers(); 
+     }, []);
 
-    const handleDelete = id => {
+    // Gestion de la suppréssion d'un agent
+    const handleDelete =  async id => {
      // Ceci est un mixe des deux approche pour la suppréssion
      const originalUsers = [...users];
-
-     // 1. L'approche optimiste
+       // 1. L'approche optimiste
      setUsers(users.filter(user => user.id !==id));
-
      // 2. l'approche pessimiste
      try {
-     await UsersAPI.delete(id)
+     await usersAPI.delete(id)
    } catch(error) {
      setUsers(originalUsers);
     console.log(error.response);
   }
-
- // UsersAPI.delete(id)   
-  //   .then(response => console.log("ok"))
-   //  .catch(error => {
-       // Si ça na pas marché je veut remettre mon tableau original
-    });
+};
+  // Gestion du changement de page
+    const handlePageChange = page => setCurrentPage(page);
      
-     };
-
-     const handlePageChange = (page) => {
-      setCurrentPage(page);
-     };
-
-     const handleSearch = event => {
-       const value = event.currentTarget.value;
-       setSearch(value);
+   // Gestion de la recherche
+   const handleSearch = ({currentTarget}) => {
+       setSearch(currentTarget.value);
        setCurrentPage(1);
      };
 
      const itemsPerPage = 10;
 
-
+    // Filtrage des agents en function de la recherche
      let filteredUsers
      if(search === ""){
         filteredUsers = users
@@ -60,10 +59,10 @@ const UsersPage = props => {
            u.firstName.toLowerCase().includes((search.toLowerCase()) ||
            u.lastName.toLowerCase().includes(search.toLowerCase()) ||
            u.email.toLowerCase().includes(search.toLowerCase()) ||
-          u.cardPro.toLowerCase().includes(search.toLowerCase()) 
-          ));
+          u.cardPro.toLowerCase().includes(search.toLowerCase()))
+        );
        }
-
+      // Pagination des données
      const paginatedUsers = Pagination.getData(
        filteredUsers,
        currentPage, 
@@ -87,8 +86,10 @@ const UsersPage = props => {
           <th>Agent</th>
           <th>Email</th>
           <th>Numéro carte pro</th>
+          <th>Date delivration carte pro</th>
+          <th>Date d'expiration carte pro</th>
           <th>Plannigs</th>
-          <th>Disponibilités</th>
+          <th>Idisponibilités</th>
           <th>Rapports</th>
           <th>Services</th>
           
@@ -104,6 +105,8 @@ const UsersPage = props => {
               </td>
               <td>{user.email}</td>
               <td>{user.cardPro}</td>
+              <td>{FormatDateAPI.formatDate(user.dateCreatedCarPro)}</td> 
+              <td>{FormatDateAPI.formatDate(user.expiryDateCardPro)}</td> 
               <td>{user.availabilities.length}</td>
               <td>{user.plannings.length}</td>
               <td>{user.reports.length}</td>

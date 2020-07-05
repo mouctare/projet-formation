@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=AvailabilityRepository::class)
  * @ApiResource(
  *   collectionOperations={ 
- *          "GET"={"path"="/disponiblites"},
+ *          "GET"={"path"="/disponibilites"},
 *            "POST"={"path"="/disponibilites", "security"="is_granted('ROLE_USER')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"}
  *  },
  *                        

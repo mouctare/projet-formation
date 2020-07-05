@@ -22,15 +22,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  * 
  * collectionOperations={ 
  *          "GET"={"path"="/agents"},
- *            "POST"={"path"="/agents", "security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *            "POST"={"path"="/agents", "security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
  *            "checkCartePro"={"method"="post", "path"="/agents/checkCartePro", "controller"="App\Controller\UserFilterCarteProController"},
  *             
  *  },
  *                        
  *    itemOperations={
  *          "GET"={"path"="/agents/{id}"}, 
- *          "PUT"={"path"="/agents/{id}", "security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
- *          "DELETE"={"path"="/agents/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "PUT"={"path"="/agents/{id}", "security"="is_granted('ROLE_ADMIN')", "security_message"="Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "DELETE"={"path"="/agents/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
  *          
  *          
  * },
@@ -43,11 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  },
  *    normalizationContext={
  *   "groups"={"users_read"}
- * } ,
- *  attributes={
- *      "pagination_enabled"=true,
- *      "pagination_items_per_page"=20 
- * }
+ * } 
  * )
  * @ApiFilter(SearchFilter::class)
  * @ApiFilter(OrderFilter::class)
@@ -134,6 +130,23 @@ class User implements UserInterface
      * @ApiSubresource
      */
     private $services;
+
+    /**
+      * @ORM\Column(type="datetime")
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de création de la carte professionnnelle  doit etre renseignée ")
+     * 
+      */
+    private $dateCreatedCarPro;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date d'expiration de la carte professionnnelle  doit etre renseignée ")
+     */
+    private $expiryDateCardPro;
 
     public function __construct()
     {
@@ -377,6 +390,30 @@ class User implements UserInterface
                 $service->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDateCreatedCarPro(): ?\DateTimeInterface
+    {
+        return $this->dateCreatedCarPro;
+    }
+
+    public function setDateCreatedCarPro( $dateCreatedCarPro): self
+    {
+        $this->dateCreatedCarPro = $dateCreatedCarPro;
+
+        return $this;
+    }
+
+    public function getExpiryDateCardPro(): ?\DateTimeInterface
+    {
+        return $this->expiryDateCardPro;
+    }
+
+    public function setExpiryDateCardPro( $expiryDateCardPro): self
+    {
+        $this->expiryDateCardPro = $expiryDateCardPro;
 
         return $this;
     }
