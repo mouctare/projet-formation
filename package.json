@@ -17,6 +17,7 @@
         "@babel/preset-react": "7.0.0",
         "@material-ui/pickers": "^3.2.10",
         "axios": "0.18.0",
+        "jwt-decode": "^2.2.0",
         "moment": "^2.27.0",
         "react": "16.8.6",
         "react-datepicker": "^3.0.0",

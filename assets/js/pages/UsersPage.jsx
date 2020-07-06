@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import FormatDateAPI from "../services/FormatDateAPI";
-import usersAPI from "../services/UsersAPI";
+import UsersAPI from "../services/UsersAPI";
 
 
 const UsersPage = props => {
@@ -13,7 +13,7 @@ const UsersPage = props => {
     // Permet d'aller récupérer les agents
     const fetchUsers = async () => {
       try {
-        const data = await usersAPI.findAll()
+        const data = await UsersAPI.findAll()
         setUsers(data);
       } catch(error) {
         console.log(error.response)
@@ -32,7 +32,7 @@ const UsersPage = props => {
      setUsers(users.filter(user => user.id !==id));
      // 2. l'approche pessimiste
      try {
-     await usersAPI.delete(id)
+     await UsersAPI.delete(id)
    } catch(error) {
      setUsers(originalUsers);
     console.log(error.response);
@@ -88,7 +88,7 @@ const UsersPage = props => {
           <th>Numéro carte pro</th>
           <th>Date delivration carte pro</th>
           <th>Date d'expiration carte pro</th>
-          <th>Plannigs</th>
+          <th>Plannings</th>
           <th>Idisponibilités</th>
           <th>Rapports</th>
           <th>Services</th>

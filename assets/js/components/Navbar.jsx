@@ -1,9 +1,22 @@
-import React from "react";
+import React, {useContext} from "react";
 import logo from '../logo.jpg';
+import AuthAPI from "../services/AuthAPI";
+import { NavLink } from "react-router-dom";
+import AuthContext from "../contexts/AuthContext";
 
 
 
- const Navbar = props => {
+
+ const Navbar = ({ history }) => {
+   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    AuthAPI.logout();
+    setIsAuthenticated(false);
+    // Quand je me deconnecte , je vais etre rédirigé vers le formulaire de connecxion.
+    history.push("/login");
+
+  }
     return (
     <nav className="navbar navbar-expand-sm bg-primary navbar-dark
     navbar-dark px-sm-5">
@@ -11,9 +24,9 @@ import logo from '../logo.jpg';
       
       />
       
-     <a className="navbar-brand" href="#">
-             Gestion du personnel 
-        </a>
+     <NavLink className="navbar-brand" to="/">
+        Gestion du personnel
+      </NavLink>
     <button 
         className="navbar-toggler" 
         type="button" 
@@ -29,47 +42,69 @@ import logo from '../logo.jpg';
     <div className="collapse navbar-collapse" id="navbarColor03">
       <ul className="navbar-nav mr-auto">
        <li className="nav-item">
-          <a className="nav-link" href="#">
-          Accueil 
-            </a>
+          <NavLink className="nav-link" to="/Accueil">
+             Accueil 
+            </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">  A propos</a>
+          <NavLink className="nav-link" to="/A propos"> 
+           A propos
+          </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">Agents</a>
+          <NavLink className="nav-link" to="/agents">
+            Agents
+          </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">Plannings</a>
+          <NavLink className="nav-link" to="/plannings">
+            Plannings
+          </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">Idisponibiltés</a>
+          <NavLink className="nav-link" to="/disponibilites">
+            Indisponibiltés
+            </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">Services</a>
+          <NavLink className="nav-link" to="/services">
+            Services
+            </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">Rapports</a>
+          <NavLink className="nav-link" to="/rapports">
+            Rapports
+          </NavLink>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">Sites</a>
+          <NavLink className="nav-link" to="sites">
+            Sites
+            </NavLink>
         </li>
       </ul>
       <ul className="navbar-nav ml-auto">
-             <li className="nav-item">
-                 <a href="#" className="nav-link">
-                     Inscription
-                </a>
-
-             </li>
+        {(!isAuthenticated && ( 
+         <> 
+               <li className="nav-item">
+              <NavLink to="/register" className="nav-link">
+                    Inscription
+            </NavLink>
+          </li>
           <li className="nav-item">
-              <a href="#" className="btn btn-success">Connexion !
-              </a>
+              <NavLink to="/login" className="btn btn-success">
+                Connexion !
+              </NavLink>
              </li>
-             <li className="nav-item">
-              <a href="#" className="btn btn-danger">Déconnexion !
-              </a>
-             </li>
+             </> 
+        )) || (
+       
+         <li className="nav-item">
+          <button onClick={handleLogout} className="btn btn-danger">
+            Déconnexion !
+          </button>
+         </li>
+        )}
+           
         </ul>
      </div>
    

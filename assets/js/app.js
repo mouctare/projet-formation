@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDom from "react-dom";
-import "../css/app.css";
 import { HashRouter, Route, Switch, withRouter } from "react-router-dom";
+import "../css/app.css";
 import Navbar from "./components/Navbar";
-import HomePage from "./pages/HomePage";
-import FooterPage from "./pages/FooterPage";
-import UsersPage  from "./pages/UsersPage";
-import UsersPageWithPagination from "./pages/UsersPageWithPagination";
-import PlanningsPage from "./pages/PlanningsPage";
-import SitesPage from "./pages/SitesPage";
+import PrivateRoute from "./components/PrivateRoute";
+import AuthContext from "./contexts/AuthContext";
 import AvailabilityPage from "./pages/AvailabilityPage";
+import FooterPage from "./pages/FooterPage";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import PlanningsPage from "./pages/PlanningsPage";
 import ReportsPage from "./pages/ReportsPage";
 import ServicesPage from "./pages/ServicesPage";
+import SitesPage from "./pages/SitesPage";
+import UsersPage from "./pages/UsersPage";
+import AuthAPI from "./services/AuthAPI";
 
 
 
@@ -23,26 +26,45 @@ import ServicesPage from "./pages/ServicesPage";
 
 console.log("Hello world !!!");
 
+AuthAPI.setup();
+ 
 
-const App = () => {
-   return ( 
-<HashRouter>
 
-       <Navbar/>
+ const App = () => {
+   const [isAuthenticated, setIsAuthenticated] = useState(
+      AuthAPI.isAuthenticated()
 
-          <main className="container pt-5">
+      );
+
+    const NavbarWithRouter = withRouter(Navbar);
+
+   
+
+ return ( 
+   <AuthContext.Provider 
+     value={{
+    isAuthenticated,
+    setIsAuthenticated
+   }}
+  >
+   <HashRouter>
+     <NavbarWithRouter  />
+
+      <main className="container pt-5">
              <Switch>
-                <Route path="/services" component={ServicesPage} />
-                <Route path="/rapports" component={ReportsPage} />
-                <Route path="/disponibilites" component={AvailabilityPage} /> 
-                <Route path="/sites" component={SitesPage} /> 
-                <Route path="/plannings" component={PlanningsPage} /> 
-               <Route path="/agents" component={UsersPage} />   
+                <Route  path="/login" component={LoginPage} />
+                <PrivateRoute path="/services" component={ServicesPage}/>
+                <PrivateRoute path="/rapports" component={ReportsPage} />
+                <PrivateRoute  path="/disponibilites" component={AvailabilityPage}  /> 
+                <PrivateRoute path="/sites" component={SitesPage} /> 
+                <PrivateRoute path="/plannings" component={PlanningsPage} /> 
+               <PrivateRoute path="/agents" component={UsersPage} />   
                 <Route path="/" component={HomePage} />
              </Switch>
            </main>
          <FooterPage />
 </HashRouter>
+</AuthContext.Provider>
 
 );
 

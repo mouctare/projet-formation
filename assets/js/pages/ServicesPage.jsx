@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import FormatDateAPI from "../services/FormatDateAPI";
 import axios from "axios";
+import ServicesAPI from "../services/ServicesAPI";
 
 
 
@@ -15,9 +16,7 @@ import axios from "axios";
 
     const fetchServices = async () => {
         try {
-            const data =  await axios
-            .get("http://localhost:8000/api/services")
-            .then(response => response.data['hydra:member']);
+          const data = await ServicesAPI.findAll();
             setServices(data);
 
             } catch(error) {
@@ -36,6 +35,18 @@ import axios from "axios";
       setCurrentPage(1);
     };
 
+    const handleDelete = async id => {
+      const originalServices = [...services];
+      setServices(services.filter(service => service.id !== id));
+      
+      try {
+        // 
+        await  ServicesAPI.delete(id)
+      } catch(error) {
+        console.log(error.response)
+        setServices(originalServices);
+      }
+    };
       // Filtrage des agents en function de la recherche
       let filteredServices
       if(search === ""){
@@ -62,7 +73,7 @@ import axios from "axios";
 
  return ( 
        <>
-         <h1>Agendas des prises de services </h1>
+         <h1>Agenda des prises de services </h1>
          <div className="form-group">
            <input type="text" onChange={handleSearch} 
             value={search} className="form-control" placeholder="Rechercher ..."/>
@@ -91,10 +102,11 @@ import axios from "axios";
                      <td>{service.description}</td>
                      <td>{service.lat}</td>
                      <td>{service.lng}</td>
-                      <th>
-                         <button className="btn btn-sm btn-danger">Supprimer</button>
-                     </th>
-                 </tr>
+                      <td>
+                      <button className="btn btn-sm btn-danger"
+                      onClick={() => handleDelete(service.id)}>Supprimer</button>
+                      </td>
+                     </tr>
                   ))}
              </tbody>
          </table>
@@ -109,9 +121,9 @@ import axios from "axios";
          /> 
 
          )}
-     </>
-    );
-}
+      </>
+  );
+};
 
 
 export default ServicesPage;
