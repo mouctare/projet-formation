@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import Pagination from "../components/Pagination";
-import FormatDateAPI from "../services/FormatDateAPI";
 import PlanningsAPI from "../services/PlanningsAPI";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import TableLoader from "../components/loaders/TableLoader";
+
 
 const PlanningsPage = (props) => {
 
     const [plannings, setPlannings] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
-    
-    const itemsPerPage = 10;
-  
-    
+    const [loading, setLoading] = useState(true);
+    const [isRoleUser, setisRoleUser] = useState(false);
+
+    const itemsPerPage = 10;  
+
     const fetchPlannings = async () => {
       try {
         const data =   await PlanningsAPI.findAll();
-        setPlannings(data);
+       setisRoleUser(window.localStorage.getItem("UserRole")? true: false);
+        setPlannings(data);         
+        setLoading(false); 
       } catch(error) {
-        console.log(error.response);
+        toast.error("Imposssible de charger les plannings");
       }
     };
     
@@ -43,12 +50,18 @@ const PlanningsPage = (props) => {
       try {
         // 
         await  PlanningsAPI.delete(id);
+        toast.success("Le planning a bien été supprimé")
       } catch(error) {
-        console.log(error.response)
+        toast.error("La suppression du planning a échoué")
         setPlannings(originalPlannings);
       }
     };
     
+     
+      const formatDate = (str) => moment(str).format("YYYY-MM-DD HH:mm");
+    
+
+
     // Filtrage des agents en function de la recherche
      let filteredPlannings
      if(search === ""){
@@ -59,8 +72,8 @@ const PlanningsPage = (props) => {
            p.user.firstName.toLowerCase().startsWith((search.toLowerCase()) ||
            p.user.lastName.toLowerCase().startsWith(search.toLowerCase()) ||
            p.dateStart.toLowerCase().includes(search.toLowerCase()) ||
-          p.dateEnd.toLowerCase().includes(search.toLowerCase()))  ||
-          p.site.name.toLowerCase().includes(search.toLowerCase())
+           p.dateEnd.toLowerCase().includes(search.toLowerCase()))  ||
+           p.site?.name.toLowerCase().includes(search.toLowerCase())
 
         );
        }
@@ -76,7 +89,21 @@ const PlanningsPage = (props) => {
        
       return (
         <>
-          <h1>Liste des plannings</h1>  
+        <div className="mb-3 d-flex justify-content-between align-items-center">
+          <h1>Liste des plannings</h1> 
+          {!isRoleUser && ( 
+            <div className="col-lg-5">
+            <div className="card">
+            <div className="card-header">     
+          <Link className="btn btn-primary"  to="/plannings/new">
+            Créer un planning
+          </Link> 
+          </div>
+           </div>
+           </div>
+          )}
+          </div>
+      
 
           <div className="form-group">
            <input type="text" onChange={handleSearch} 
@@ -92,31 +119,38 @@ const PlanningsPage = (props) => {
                       <th>Site</th>
                 </tr>
               </thead>
+              
+              {!loading &&  (
               <tbody>
                   {paginatedPlannings.map(planning => (                   
                   <tr key={planning.id}>
                        <td>
-                         <a href="#">{planning.user.firstName} {planning.user.lastName}</a>
+                       <Link to={"/plannings/" + planning.id}>
+                     {planning.user.firstName} {planning.user.lastName}
+                       </Link>
+                       </td>
+                         <td className="text-center">{formatDate(planning.dateStart)}</td>
+                         <td className="text-center">{formatDate(planning.dateEnd)}</td>
+                         <td> <a href="#">{planning.site?.name} {planning.site?.city}</a>
                          </td>
-                       <td>{FormatDateAPI.formatDate(planning.dateStart)}</td>
-                      <td>{FormatDateAPI.formatDate(planning.dateEnd)}</td>
-                      <td>
-                        <a href="#">{planning.site?.name} {planning.site?.city}</a>
-                      
-                      </td>
-                      
-                      
+                         {!isRoleUser && (    
                          <td>
-                          <button className="btn btn-sm btn-primary mr-1">Editer</button>
+                          <Link to={"/plannings/" + planning.id} 
+                            className="btn btn-sm btn-primary mr-1"
+                             >
+                              Editer
+                            </Link>
                           <button className="btn btn-sm btn-danger" 
                           onClick={() => handleDelete(planning.id)}>Supprimer</button>
                       </td>
+                         )}
                      </tr>
                      ))}
                  </tbody>
-          </table>
-
-          {itemsPerPage < filteredPlannings.length && (
+                     )} 
+                </table>
+                {loading && <TableLoader />} 
+               {itemsPerPage < filteredPlannings.length && (
           <Pagination 
                 currentPage={currentPage}  
                 itemsPerPage={itemsPerPage} 

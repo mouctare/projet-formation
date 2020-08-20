@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
-import axios from "axios";
 import ReportsAPI from "../services/ReportsAPI";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import TableLoader from "../components/loaders/TableLoader";
 
 
 const TITLE_CLASSES = {
+    COURANT : "info",
     INCIDENT : "danger",
-    COURANT : "info"
+    
 }
-const ReportsPage = props => {
+const ReportsPage = () => {
+    
+    
+    const [reports, setReports] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [isRoleUser, setisRoleUser] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-
-const [reports, setReports] = useState([]);
-const [currentPage, setCurrentPage] = useState(1);
-const [search, setSearch] = useState("");
 
 const itemsPerPage = 10;
 
@@ -22,9 +28,10 @@ const fetchReports = async () => {
     try {
         const data = await  ReportsAPI.findAll();
        setReports(data)
-        console.log(data);
+       setisRoleUser(window.localStorage.getItem("UserRole")? true: false);
+       setLoading(false); 
    } catch(error) {
-       console.log(error.response);
+     toast.error("Erreur lors du chargement des rapports !")
    }
      
 };
@@ -49,8 +56,9 @@ useEffect(() => {
 
      try {
         await ReportsAPI.delete(id)
+        toast.success("Le rapport a bien été supprimé")
      } catch(error) {
-        console.log(error.response);
+        toast.error("Une erreur est survenue");
         setReports(originalReports);
     }
  };
@@ -79,7 +87,16 @@ useEffect(() => {
 
    return (
      <>
+     <div className="mb-3 d-flex justify-content-between algn-items-center">
         <h1>Agenda des rapports</h1>
+        <div className="col-lg-5">
+        <div className="card">
+        <div className="card-header">
+        <Link className="btn btn-primary" to="/rapports/new">Créer un rapport</Link>
+       </div>
+       </div>
+      </div>
+     </div>
         
         <div className="form-group">
            <input type="text" onChange={handleSearch} 
@@ -96,6 +113,8 @@ useEffect(() => {
                     <th>site</th>
                 </tr>
             </thead>
+
+            {!loading &&  (
             <tbody>
                 {paginatedReports.map(report => ( 
                     
@@ -107,11 +126,23 @@ useEffect(() => {
                      <span className={"badge badge-" + TITLE_CLASSES[report.title]}>{report.title}</span>
                      </td>
                   <td>{report.description}</td>
-                 <td><img src={report?.image} 
-                    style={{ width: 20, height: 20 }}
-                  />
-                  </td>
-                  <td>{report.site?.name}</td>
+
+
+
+
+                 <td>{report?.imageName} 
+                 <div className="container">
+                  <i class="fas fa-file-upload"  />  
+                   <i class="fas fa-file-download" />
+                  </div>
+                   </td>
+
+
+
+                  
+                 <td>{report.site?.name}</td>
+
+                  {!isRoleUser && ( 
                  <td>
                     <button className="btn btn-sm btn-danger"
                      onClick={() => hadleDelete(report.id)}
@@ -119,10 +150,15 @@ useEffect(() => {
                          Supprimer
                     </button> 
                  </td>
+                   )}
                  </tr>
                  ))}
              </tbody>
+            )}
             </table>
+            
+            {loading && <TableLoader />} 
+      
             {itemsPerPage < filteredReports.length && (
             <Pagination 
                 currentPage={currentPage}  

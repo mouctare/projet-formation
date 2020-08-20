@@ -16,8 +16,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=SiteRepository::class)
  * @ApiResource(
- *   collectionOperations={"GET"={"path"="/sites"}, "POST"={"path"="/sites"}},
- *    itemOperations={"GET"={"path"="/sites/{id}"}, "PUT"={"path"="/sites/{id}"}, "DELETE"={"path"="/sites/{id}"}},
+ *   collectionOperations={"GET"={"path"="/sites"},
+ *                        "POST"={"path"="/sites","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *    
+ * 
+ *  },
+ *   
+ *   itemOperations={"GET"={"path"="/sites/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"}, 
+ *                   "PUT"={"path"="/sites/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *                   "DELETE"={"path"="/sites/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ * 
+ * },
  *    subresourceOperations={
  *        "reports_get_subresource"={"path"="/sites/{id}/rapports"},
  *        "plannings_get_subresource"={"path"="/sites/{id}/plannings"},
@@ -46,7 +55,6 @@ class Site
     /**
      * @ORM\Column(type="integer")
      * @Groups({"sites_read","plannings_read","reports_read"})
-     * @Assert\Type(type="integer", message="Le numero de rue doit etre un nombre !")
      * @Assert\NotBlank(message="Le numero de  rue du site est obligatiore !")
      * 
      */
@@ -69,14 +77,14 @@ class Site
      * @ORM\Column(type="integer")
      * @Groups({"sites_read","plannings_read","reports_read"})
      * @Assert\NotBlank(message="Le code postal de la ville du site est obligatiore !")
-     * @Assert\Type(type="integer", message="Le code postal de la ville  du site doit etre un nombre!")
+     
      */
     private $postCode;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"sites_read","plannings_read","reports_read"})
-     *  @Assert\NotBlank(message="La ville du site est obligatiore !")
+     * @Assert\NotBlank(message="La ville du site est obligatiore !")
      * 
      */
     private $city;

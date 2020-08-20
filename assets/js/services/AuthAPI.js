@@ -33,6 +33,7 @@ function authenticate(credentials) {
 
   function setAxiosToken(token) {
     axios.defaults.headers["Authorization"] = "Bearer " + token;
+    
   }
 
    /**
@@ -43,8 +44,21 @@ function authenticate(credentials) {
       const token = window.localStorage.getItem("authToken");
       if(token ) {
         const {exp: expiration} =  jwtDecode(token);
+        const {roles: rolees} =  jwtDecode(token);
+       // console.log(token)
+         // Ici je stocke le role_user dans mon localStorage       
+        rolees.forEach(elt => {
+          if(  elt =="ROLE_USER"){
+            window.localStorage.setItem("UserRole", elt);            
+          }  
+          else  {
+            window.localStorage.setItem("UserRole", "");          
+        }
+        });
+       
         if(expiration * 1000  > new Date().getTime()) {
          setAxiosToken(token);
+       
         }
       
         }

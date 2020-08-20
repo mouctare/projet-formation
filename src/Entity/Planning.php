@@ -55,18 +55,10 @@ class Planning
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"plannings_read","users_read","sites_read"})
-     *  @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de service  doit etre renseignée ")
      */
     private $dateEnd;
-
-      /**
-     * @ORM\Column(type="datetime")
-     * @Groups({"reports_read","users_read","sites_read"})
-     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
-     * @Assert\NotBlank(message="La date de création du rapport  doit etre renseignée ")
-     */
-    private $createdAt;
 
      /**
      * @ORM\Column(type="datetime")
@@ -90,8 +82,15 @@ class Planning
      */
     private $site;
 
-   
-     public function getId(): ?int
+    /**
+     * @ORM\Column(type="datetime")
+     * @Groups({"plannings_read","users_read","sites_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de création fu planning  d doit etre renseignée ")
+     */
+    private $createdAt;
+
+    public function getId(): ?int
     {
         return $this->id;
     }

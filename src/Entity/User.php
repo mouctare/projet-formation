@@ -21,16 +21,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(
  * 
  * collectionOperations={ 
- *          "GET"={"path"="/agents"},
- *            "POST"={"path"="/agents", "security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *            "GET"={"path"="/agents"},
+ *            "POST"={"path"="/agents", "security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
  *            "checkCartePro"={"method"="post", "path"="/agents/checkCartePro", "controller"="App\Controller\UserFilterCarteProController"},
  *             
  *  },
  *                        
  *    itemOperations={
  *          "GET"={"path"="/agents/{id}"}, 
- *          "PUT"={"path"="/agents/{id}", "security"="is_granted('ROLE_ADMIN')", "security_message"="Vous n'avez pas les droits suffisants pour effectuer cette opération"},
- *          "DELETE"={"path"="/agents/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "PUT"={"path"="/agents/{id}", "security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "DELETE"={"path"="/agents/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"="22 Vous n'avez pas les droits suffisants pour effectuer cette opération"},
  *          
  *          
  * },
@@ -43,7 +43,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  },
  *    normalizationContext={
  *   "groups"={"users_read"}
- * } 
+ * } ,
+ *  attributes={
+ *      "pagination_enabled"=true,
+ *      "pagination_items_per_page"=20 
+ * }
  * )
  * @ApiFilter(SearchFilter::class)
  * @ApiFilter(OrderFilter::class)
@@ -63,7 +67,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
      * @Assert\NotBlank(message="L'email doit etre renseigné ! ")
-      *@Assert\Email(message="L' adresse email doit avoir un format valide ! ")
+     *@Assert\Email(message="L' adresse email doit avoir un format valide ! ")
      */
     private $email;
 
@@ -99,9 +103,28 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=1000)
      * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
-     * @Assert\NotBlank(message="La carte professionnelle de l'agent est obligatoire")
+     * @Assert\NotBlank(message="La carte professionnelle doit étre composéé de 19 caractères ")
+     * 
+     * 
      */
     private $cardPro;
+
+     /**
+     * @ORM\Column(type="datetime")
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de création de la carte professionnnelle  doit etre renseignée ")
+     * 
+      */
+      private $dateCreatedCarPro;
+
+      /**
+       * @ORM\Column(type="datetime")
+       * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
+       * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+       * @Assert\NotBlank(message="La date d'expiration de la carte professionnnelle  doit etre renseignée ")
+       */
+       private $expiryDateCardPro;
 
     /**
      * @ORM\OneToMany(targetEntity=Availability::class, mappedBy="user")
@@ -130,23 +153,6 @@ class User implements UserInterface
      * @ApiSubresource
      */
     private $services;
-
-    /**
-      * @ORM\Column(type="datetime")
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
-     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
-     * @Assert\NotBlank(message="La date de création de la carte professionnnelle  doit etre renseignée ")
-     * 
-      */
-    private $dateCreatedCarPro;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read","services_read"})
-     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
-     * @Assert\NotBlank(message="La date d'expiration de la carte professionnnelle  doit etre renseignée ")
-     */
-    private $expiryDateCardPro;
 
     public function __construct()
     {
@@ -190,9 +196,9 @@ class User implements UserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = Null;
-
-        return array_unique($roles);
+        //$roles[] = 'ROLE_USER';
+        //return array_unique($roles);
+        return $roles;
     }
 
     public function setRoles(array $roles): self
@@ -297,7 +303,6 @@ class User implements UserInterface
                 $availability->setUser(null);
             }
         }
-
         return $this;
     }
 
@@ -393,7 +398,6 @@ class User implements UserInterface
 
         return $this;
     }
-
     public function getDateCreatedCarPro(): ?\DateTimeInterface
     {
         return $this->dateCreatedCarPro;
@@ -411,10 +415,11 @@ class User implements UserInterface
         return $this->expiryDateCardPro;
     }
 
-    public function setExpiryDateCardPro( $expiryDateCardPro): self
+    public function setExpiryDateCardPro($expiryDateCardPro): self
     {
         $this->expiryDateCardPro = $expiryDateCardPro;
 
         return $this;
     }
 }
+

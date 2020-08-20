@@ -1,6 +1,11 @@
 import React, { useState, useContext } from "react";
 import AuthAPI from "../services/AuthAPI";
 import AuthContext from "../contexts/AuthContext";
+import Field from "../components/forms/Field";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import Form from 'react-bootstrap/Form';
+import { toast } from "react-toastify";
 
  const LoginPage = ({  history  }) => {
 
@@ -29,55 +34,56 @@ import AuthContext from "../contexts/AuthContext";
            await AuthAPI.authenticate(credentials);
            setError("");
            setIsAuthenticated(true);
+           toast.success("Vous ete désormais connecté !");
            history.replace("/plannings");
           } catch(error) {
            setError(
                "Aucun compte n'est associé à cette adresse ou alors les informations ne correspondent pas !"
             );
+            toast.error("Une erreur est survenue");
          }
-
-         console.log(credentials);
-     };
+      };
      
     return (
 
-    <>
+    <div className="d-flex justify-content-center login-area">
+     <Card style={{ widht: "30rem" }}>
+       <h3 className="text-center mt-2 mb-2 text-uppercase">Login</h3>
+       <hr />
 
-     <h1>Connexion à l'application  </h1>
+       <Card.Body>
+          <Form  onSubmit={handleSubmit}>
+          <Field  
+         label="Adresse email"
+         name="username" 
+         value={credentials.username} 
+         onChange={handleChange}
+         placeholder="Adresse email de connexion" 
+         error={error}
+         />
 
-     <form onSubmit={handleSubmit}>
-      
-          <div className="form-group">
-              <label htmlFor="username">Adresse email</label>
-             <input 
-                value={credentials.username}
-                onChange={handleChange}
-                type="email" 
-                placeholder="Adresse email de connexion" 
-                name="username" 
-                id="username"
-                className={"form-control" + (error && " is-invalid")}
-                />
-                 {error && <p className="invalid-feedback">{error}</p>}
-             </div>
-           <div className="form-group">
-              <label htmlFor="password">Mot de passe</label>
-              <input 
-              value={credentials.password}
-                type="password" 
-                onChange={handleChange}
-                placeholder="Mot de passe" name="password" 
-                id="password"
-                className="form-control" />
-          </div>
-          <div className="form-group">
-              <button type="submit" className="btn btn-success">Je me connecte
-              </button>
-        </div>
-      </form>
-   </>
-    );
-};
+        <Field 
+          name="password" 
+          label="Mot de passe" 
+          value={credentials.password} 
+          onChange={handleChange}
+          type="password" 
+          error="" 
+          />
+       <div className="text-center">
+       <Button 
+         variant="primary" type="submit" 
+         className="btn btn-primary btn-block text-uppercase"
+        >
+         Login
+       </Button>
+       </div>
+    </Form>
+ </Card.Body>
+ </Card>
+</div>
+);
+}; 
 
 
 export default LoginPage;

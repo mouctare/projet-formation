@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ReportRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -40,7 +42,7 @@ class Report
      * @ORM\Column(type="string", length=255)
      * @Groups({"reports_read","users_read","sites_read"})
      * @Assert\NotBlank(message="Le titre du rapport doit etre renseigné ! ")
-     * @Assert\Choice(choices={"COURANT","INCIDENT"}, message="Le titre du rapport doit etre  COURANT  ou ICIDENT"))
+     * @Assert\Choice(choices={"COURANT","INCIDENT"}, message="Le titre du rapport doit etre  COURANT  ou INCIDENT"))
      */
     private $title;
 
@@ -54,17 +56,16 @@ class Report
 
     /**
      * @ORM\Column(type="text" , nullable=false)
-     * @Groups({"reports_read","users_read","sites_read","users_read"})
+     * @Groups({"reports_read","users_read","sites_read"})
      * @Assert\NotBlank(message="Le rapport doit avoir un minumum de description !")
      */
     private $description;
      /**
      * @ORM\Column(type="string", length=1000, nullable=true)
      * @Groups({"reports_read","sites_read"})
-     * @Assert\Url(message = "L'image doit avoir un format de type url")
      */
-    private $image;
-
+    private $imageName;
+ 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="reports")
      * @ORM\JoinColumn(nullable=false)
@@ -80,6 +81,18 @@ class Report
      * @Assert\NotBlank(message="Le nom du site   est obligatoire")
      */
     private $site;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageExtension;
+
+    /**
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $imageContent;
+
+    
 
     public function getId(): ?int
     {
@@ -121,14 +134,14 @@ class Report
 
         return $this;
     }
-    public function getImage(): ?string
+    public function getImageName(): ?string
     {
-        return $this->image;
+        return $this->imageName;
     }
 
-    public function setImage(?string $image): self
+    public function setImageName(?string $imageName): self
     {
-        $this->image = $image;
+        $this->imageName = $imageName;
 
         return $this;
     }
@@ -156,4 +169,29 @@ class Report
 
         return $this;
     }
+
+    public function getImageExtension(): ?string
+    {
+        return $this->imageExtension;
+    }
+
+    public function setImageExtension(?string $imageExtension): self
+    {
+        $this->imageExtension = $imageExtension;
+
+        return $this;
+    }
+
+    public function getImageContent()
+    {
+        return $this->imageContent;
+    }
+
+    public function setImageContent($imageContent): self
+    {
+        $this->imageContent = $imageContent;
+
+        return $this;
+    }
+
 }

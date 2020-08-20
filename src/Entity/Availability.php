@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-
+use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AvailabilityRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -60,13 +60,22 @@ class Availability
      */
     private $dateEnd;
 
+     /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Groups({"availabilities_read","users_read"})
+     * @Assert\NotBlank(message="Les indisponibilités doivent avoir un minumum de detail !")
+     */
+    private $detail;
+
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="availabilities")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"availabilities_read"})
-     * @Assert\NotBlank(message="L'utilisateur  est obligatoire")
+     * @Assert\NotBlank(message="L'agent  est obligatoire")
      */
     private $user;
+
+   
 
     public function getId(): ?int
     {
@@ -105,6 +114,18 @@ class Availability
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getDetail(): ?string
+    {
+        return $this->detail;
+    }
+
+    public function setDetail(?string $detail): self
+    {
+        $this->detail = $detail;
 
         return $this;
     }

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-
+use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ServiceRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *   "groups"={"services_read"}
  * } 
  * )
- * @ApiFilter(OrderFilter::class, properties={"dateStart", "$typeService"})
+ * @ApiFilter(OrderFilter::class, properties={"dateStart", "typeService"})
  */
 class Service
 {
@@ -41,8 +41,9 @@ class Service
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"services_read","users_read"})
+     * * @Assert\NotBlank(message="La date de  prise de service est obligatoire")
      * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
-     * @Assert\NotBlank(message="La date de  prise de service est obligatoire doire ")
+     
      */
     private $dateStart;
 
@@ -146,9 +147,9 @@ class Service
         return $this;
     }
 
-    public function getUser(): ?User
+    public function geUser(): ?User
     {
-        return $this->user;
+        return $this->User;
     }
 
     public function setUser(?User $user): self

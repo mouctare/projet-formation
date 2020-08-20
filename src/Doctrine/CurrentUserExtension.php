@@ -2,6 +2,7 @@
 
 namespace App\Doctrine;
 use App\Entity\User;
+use App\Entity\Agent;
 use App\Entity\Report;
 use App\Entity\Service;
 use App\Entity\Planning;
@@ -32,7 +33,8 @@ class CurrentUserExtension implements QueryCollectionExtensionInterface, QueryIt
         // 2. si on demande des plannings alors agir sur la requete pour qu'elle tienne 
        // compte de l'utilisateur connecté
        if(
-           ($resourceClass === Planning::class || $resourceClass === Report::class || $resourceClass === Availability::class || $resourceClass === Service::class) && 
+            ($resourceClass === User::class ||$resourceClass === Planning::class || $resourceClass === Report::class || $resourceClass === Availability::class || $resourceClass === Service::class  
+            || $resourceClass === Site::class) && 
            !$this->auth->isGranted('ROLE_ADMIN')
            &&  $user instanceof User
         )
@@ -41,7 +43,8 @@ class CurrentUserExtension implements QueryCollectionExtensionInterface, QueryIt
            // RootAliases puisqu'il nous renvoit un tableau on prend le premier qui est l'index 0
            $rootAlias = $queryBuilder->getRootAliases()[0];
  
-           if($resourceClass === Planning::class || $resourceClass === Report::class || $resourceClass === Availability::class || $resourceClass === Service::class ) {
+           if ($resourceClass === User::class ||$resourceClass === Planning::class || $resourceClass === Report::class || $resourceClass === Availability::class 
+           || $resourceClass === Service::class  || $resourceClass === Site::class) {
                $queryBuilder->andWhere("$rootAlias.user = :user");
            }
  
