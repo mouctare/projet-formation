@@ -43,7 +43,7 @@ class PlanningUserSubscriber implements EventSubscriberInterface
       // Choper l'utilisateur actuellement connecté
          $user = $this->security->getUser();
     // Assigner l'utisateur aux planning qu'il vient de créer
-      //  $plannings->setUser($user);
+        //$plannings->setUser($user);
 
         if(empty($plannings->getUpdatedAt())) {
           $plannings->setUpdatedAt(new \DateTime());

@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PlanningRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -26,7 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "DELETE"={"path"="/plannings/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
  *          
  * },
- * 
+ 
+ *  
  *  normalizationContext={
  *   "groups"={"plannings_read"}
  * } 
@@ -40,13 +44,13 @@ class Planning
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"plannings_read","users_read","sites_read"})
+     * @Groups({"plannings_read","users_read","sites_read","services_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"plannings_read","users_read","sites_read"})
+     * @Groups({"plannings_read","users_read","sites_read","services_read"})
      * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date de prise service  doit etre renseignée ")
      */
@@ -54,7 +58,7 @@ class Planning
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"plannings_read","users_read","sites_read"})
+     * @Groups({"plannings_read","users_read","sites_read","services_read"})
      * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de service  doit etre renseignée ")
      */
@@ -62,7 +66,7 @@ class Planning
 
      /**
      * @ORM\Column(type="datetime")
-     * @Groups({"plannings_read","users_read","sites_read"})
+     * @Groups({"plannings_read","users_read","sites_read","services_read"})
      * @Assert\Type(type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de mise à jour du planning   doit etre renseignée ")
     */
@@ -71,14 +75,14 @@ class Planning
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="plannings")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"plannings_read"})
+     * @Groups({"plannings_read","services_read"})
      */
 
     private $user;
 
      /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="plannings")
-     *  @Groups({"plannings_read"})
+     *  @Groups({"plannings_read","services_read"})
      */
     private $site;
 
@@ -90,6 +94,18 @@ class Planning
      */
     private $createdAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Service::class, mappedBy="planning")
+     *@Groups({"plannings_read"}) 
+     */
+    private $services;
+
+    public function __construct()
+    {
+        $this->services = new ArrayCollection();
+    }
+
+   
     public function getId(): ?int
     {
         return $this->id;
@@ -166,4 +182,37 @@ class Planning
 
         return $this;
     }
+
+    /**
+     * @return Collection|Service[]
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): self
+    {
+        if (!$this->services->contains($service)) {
+            $this->services[] = $service;
+            $service->setPlanning($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): self
+    {
+        if ($this->services->contains($service)) {
+            $this->services->removeElement($service);
+            // set the owning side to null (unless already changed)
+            if ($service->getPlanning() === $this) {
+                $service->setPlanning(null);
+            }
+        }
+
+        return $this;
+    }
+
+  
 }

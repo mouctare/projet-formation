@@ -8031,21 +8031,11 @@
                     "dev-master": "1.15.x-dev"
                 }
             },
-            "autoload": {
-                "psr-4": {
-                    "Vich\\UploaderBundle\\": "src"
-                }
-            },
+           
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dustin Dobervich",
-                    "email": "ddobervich@gmail.com"
-                }
-            ],
+            ], 
             
             "time": "2020-07-09T07:29:07+00:00"
         },

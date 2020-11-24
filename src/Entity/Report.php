@@ -2,16 +2,17 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ReportRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ReportRepository::class)
@@ -21,6 +22,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                        
  *                         
  * },
+ * *  subresourceOperations={
+*      "media_get_subresource"={"path"="/rapports/{id}/media"}
+* },
  *    itemOperations={"GET"={"path"="/rappports/{id}"},  
  * },
  *  normalizationContext={
@@ -40,7 +44,7 @@ class Report
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"reports_read","users_read","sites_read"})
+     * @Groups({"reports_read","users_read","sites_read","medias_read"})
      * @Assert\NotBlank(message="Le titre du rapport doit etre renseigné ! ")
      * @Assert\Choice(choices={"COURANT","INCIDENT"}, message="Le titre du rapport doit etre  COURANT  ou INCIDENT"))
      */
@@ -48,7 +52,7 @@ class Report
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"reports_read","users_read","sites_read"})
+     * @Groups({"reports_read","users_read","sites_read","medias_read"})
      * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date de création du rapport  doit etre renseignée ")
      */
@@ -56,16 +60,11 @@ class Report
 
     /**
      * @ORM\Column(type="text" , nullable=false)
-     * @Groups({"reports_read","users_read","sites_read"})
+     * @Groups({"reports_read","users_read","sites_read","medias_read"})
      * @Assert\NotBlank(message="Le rapport doit avoir un minumum de description !")
      */
     private $description;
-     /**
-     * @ORM\Column(type="string", length=1000, nullable=true)
-     * @Groups({"reports_read","sites_read"})
-     */
-    private $imageName;
- 
+    
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="reports")
      * @ORM\JoinColumn(nullable=false)
@@ -83,16 +82,16 @@ class Report
     private $site;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\OneToMany(targetEntity=Media::class, mappedBy="report")
+     *  @Groups({"reports_read"})
+     *  @ApiSubresource
      */
-    private $imageExtension;
+    private $media;
 
-    /**
-     * @ORM\Column(type="blob", nullable=true)
-     */
-    private $imageContent;
-
-    
+    public function __construct()
+    {
+        $this->media = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -134,17 +133,7 @@ class Report
 
         return $this;
     }
-    public function getImageName(): ?string
-    {
-        return $this->imageName;
-    }
-
-    public function setImageName(?string $imageName): self
-    {
-        $this->imageName = $imageName;
-
-        return $this;
-    }
+   
 
     public function getUser(): ?User
     {
@@ -170,28 +159,36 @@ class Report
         return $this;
     }
 
-    public function getImageExtension(): ?string
+    /**
+     * @return Collection|Media[]
+     */
+    public function getMedia(): Collection
     {
-        return $this->imageExtension;
+        return $this->media;
     }
 
-    public function setImageExtension(?string $imageExtension): self
+    public function addMedium(Media $medium): self
     {
-        $this->imageExtension = $imageExtension;
+        if (!$this->media->contains($medium)) {
+            $this->media[] = $medium;
+            $medium->setReport($this);
+        }
 
         return $this;
     }
 
-    public function getImageContent()
+    public function removeMedium(Media $medium): self
     {
-        return $this->imageContent;
-    }
-
-    public function setImageContent($imageContent): self
-    {
-        $this->imageContent = $imageContent;
+        if ($this->media->contains($medium)) {
+            $this->media->removeElement($medium);
+            // set the owning side to null (unless already changed)
+            if ($medium->getReport() === $this) {
+                $medium->setReport(null);
+            }
+        }
 
         return $this;
     }
 
+  
 }
