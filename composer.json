@@ -4,7 +4,6 @@
     "require": {
         "php": "^7.2.5",
         "ext-ctype": "*",
-        "ext-icondb_drive": "*",
         "api-platform/api-pack": "^1.2",
         "lexik/jwt-authentication-bundle": "^2.8",
         "sensio/framework-extra-bundle": "^5.1",
@@ -30,7 +29,7 @@
         "symfony/twig-pack": "*",
         "symfony/validator": "5.1.*",
         "symfony/web-link": "5.1.*",
-        "symfony/yaml": "5.1.*"
+        "symfony/yaml": "5.1.*" 
     },
     "require-dev": {
         "symfony/debug-pack": "*",

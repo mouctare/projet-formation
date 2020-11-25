@@ -142,12 +142,12 @@ const PlanningsPage = (props) => {
                 </td>
                 {!isRoleUser && (
                   <td>
-                    <Link
-                      to={"/services/"}
+                    {/*  <Link
+                      to={"/services/" + service.id}
                       className="btn btn-sm btn-primary mr-1"
                     >
                       Detail service
-                    </Link>
+                    </Link> */}
                     <Link
                       to={"/plannings/" + planning.id}
                       className="btn btn-sm btn-primary mr-1"

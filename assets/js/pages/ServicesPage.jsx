@@ -17,11 +17,11 @@ const ServicesPage = () => {
   const [loading, setLoading] = useState(true);
   //const [isRoleUser, setisRoleUser] = useState(false);
   const [isRoleUser, setisRoleUser] = useState(false);
-  const [plannings, setPlannings] = useState([]);
+  // const [plannings, setPlannings] = useState([]);
 
   const itemsPerPage = 10;
 
-  const fetchPlannings = async () => {
+  /*  const fetchPlannings = async () => {
     try {
       const data = await PlanningsAPI.findAll();
       // console.log("  tableau de planning  ==  ", data);
@@ -31,7 +31,7 @@ const ServicesPage = () => {
     } catch (error) {
       toast.error("Imposssible de charger les plannings");
     }
-  };
+  }; */
 
   const getServiceInfo = async (service) => {
     try {
@@ -90,8 +90,7 @@ const ServicesPage = () => {
 
   useEffect(() => {
     fetchServices();
-    fetchPlannings();
-    console.log("etat de plannings servicePage", plannings);
+    //  fetchPlannings();
   }, []);
 
   const handlePageChange = (page) => setCurrentPage(page);
