@@ -30,7 +30,7 @@ import Footer from "./components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import PlanningsAPI from "./services/PlanningsAPI";
+//import PlanningsAPI from "./services/PlanningsAPI";
 
 // any CSS you import will output into a single css file (app.css in this case)
 

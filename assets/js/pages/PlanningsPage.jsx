@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { formatDate } from "../services/FormatDateAPI";
 import Pagination from "../components/Pagination";
 import PlanningsAPI from "../services/PlanningsAPI";
-
+import ServicesPage from "../pages/ServicesPage";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import TableLoader from "../components/loaders/TableLoader";
@@ -142,6 +142,12 @@ const PlanningsPage = (props) => {
                 </td>
                 {!isRoleUser && (
                   <td>
+                    <Link
+                      to={"/services/"}
+                      className="btn btn-sm btn-primary mr-1"
+                    >
+                      Detail service
+                    </Link>
                     <Link
                       to={"/plannings/" + planning.id}
                       className="btn btn-sm btn-primary mr-1"

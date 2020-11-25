@@ -95,7 +95,7 @@ class Planning
     private $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity=Service::class, mappedBy="planning")
+     * @ORM\OneToMany(targetEntity=Service::class, mappedBy="planning",  cascade="persist")
      *@Groups({"plannings_read"}) 
      */
     private $services;

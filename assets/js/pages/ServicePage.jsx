@@ -2,28 +2,19 @@ import React, { useState, useEffect } from "react";
 import ServicesAPI from "../services/ServicesAPI";
 import PlanningsAPI from "../services/PlanningsAPI";
 import { toast } from "react-toastify";
+import Field from "../components/forms/Field";
 import { Form, FormLabel } from "react-bootstrap";
 import { formatDate } from "../services/FormatDateAPI";
 
 const ServicePage = ({ history }) => {
   const [service, setServices] = useState({
-    startDate: "",
-    typeService: "PRISE DE SERVICE",
     description: "",
-    lat: "",
-    lng: "",
+    actif: false,
+    planningId: "",
   });
 
   const [loading, setLoading] = useState(true);
   const [plannings, setPlannings] = useState([]);
-
-  const [errors, setErrors] = useState({
-    startDate: "",
-    typeService: "",
-    description: "",
-    lat: "",
-    lng: "",
-  });
 
   const fetchPlannings = async () => {
     try {
@@ -41,6 +32,7 @@ const ServicePage = ({ history }) => {
   }, []);
 
   const priseService = (dateStart) => {
+    return true;
     return (
       new Date(dateStart).toISOString().slice(0, 19) >
       new Date(Date.now()).toISOString().slice(0, 19)
@@ -54,17 +46,8 @@ const ServicePage = ({ history }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const apiErros = {};
-    if (!service.startDate)
-      apiErros.startDate = "La date de débit de service  est obligatiore";
-    if (!service.typeService)
-      apiErros.typeService = "Le type service de service  est obligatiore";
-    if (!service.description)
-      apiErros.description =
-        "Le type se service   doit avoir  un minumum de detail";
-
-    setErrors(apiErros);
-
+    service.actif = true;
+    console.log(" service values from form", service);
     try {
       await ServicesAPI.create(service)
         .then((data) => console.log("Try..", data))
@@ -83,30 +66,88 @@ const ServicePage = ({ history }) => {
       }
     }
   };
+
+  let isVisible = false;
+
+  const priseServiceActive = (id) => {
+    isVisible = true;
+    console.log(" isVisible  = + = id ", isVisible + " " + id);
+    service.actif = true;
+    service.planningId = id;
+    console.log(" service values from form priseServiceActive", service);
+    try {
+      ServicesAPI.create(service)
+        .then((data) => console.log("Try..", data))
+        .catch((data) => console.log("Catch..", data));
+    } catch ({ response }) {
+      const { violations } = response.data;
+      if (violations) {
+        violations.forEach(({ propertyPath, message }) => {
+          apiErros[propertyPath] = message;
+        });
+        setErrors(apiErros);
+        toast.error("Des erreurs dans votre formulaire !");
+      }
+    }
+  };
+
   return (
     <>
-      <h1>Effectuer un service</h1>
       <form onSubmit={handleSubmit}>
-        {plannings.map((pl) => {
-          return (
-            <>
-              {/*   // quand ya plusieurs div mettrer un retur */}
-              <label> {formatDate(pl.dateStart)} </label>;
-              <label> {pl.id} </label>;
-              {priseService(pl.dateStart) && (
-                <div className="form-group">
-                  <button className="submit btn btn-success">
-                    valider votre prise de service
-                  </button>
-                </div>
-              )}
-            </>
-          );
-        })}
+        <table className="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Date de début de service</th>
+              <th scope="col">Date de fin de service</th>
+              <th scope="col"> Action prise de service</th>
+              <th scope="col"> Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {plannings.map((pl) => {
+              const { id, dateStart, dateEnd } = pl;
+
+              return (
+                <tr key={id}>
+                  <td>{formatDate(dateStart)}</td>
+                  <td>{formatDate(dateEnd)}</td>
+
+                  <td>
+                    <Field
+                      className="service"
+                      name="description"
+                      placeholder="Description du rapport"
+                      onChange={handleChange}
+                      value={service.description}
+                    />
+                    {/*  <div class="drink-form__input">
+                      <input
+                        type="text"
+                        name="service"
+                        onChange={handleChange}
+                        class="input-services"
+                        placeholder="Description du rapport"
+                        value={service.description}
+                      />
+                    </div> */}
+                  </td>
+                  <td>
+                    {priseService(pl.dateStart) && (
+                      <button
+                        className="btn btn-sm btn-primary mr-1 "
+                        hidden={isVisible}
+                        onClick={priseServiceActive(pl.id)}
+                      >
+                        effectuer votre prise de service
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </form>
-      <Form.Label htmlFor="inlineFormInputName" srOnly>
-        Name
-      </Form.Label>
     </>
   );
 };

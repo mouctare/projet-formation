@@ -47,17 +47,7 @@ class Service
      */
     private $description;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=8)
-     * @Groups({"services_read","plannings_read"})
-     */
-    private $lat;
-
-    /**
-     * @ORM\Column(type="decimal", precision=11, scale=8)
-     * @Groups({"services_read","plannings_read"})
-     */
-    private $lng;
+   
      /**
      * @ORM\Column(type="boolean")
      * @Groups({"services_read","plannings_read"})
@@ -92,29 +82,7 @@ class Service
         return $this;
     }
 
-    public function getLat(): ?string
-    {
-        return $this->lat;
-    }
-
-    public function setLat(string $lat): self
-    {
-        $this->lat = $lat;
-
-        return $this;
-    }
-
-    public function getLng(): ?string
-    {
-        return $this->lng;
-    }
-
-    public function setLng(string $lng): self
-    {
-        $this->lng = $lng;
-
-        return $this;
-    }
+  
 
    
 

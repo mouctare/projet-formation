@@ -8,12 +8,14 @@ import ServicesAPI from "../services/ServicesAPI";
 import UsersAPI from "../services/UsersAPI";
 import ServicePage from "./ServicePage";
 import PlanningsAPI from "../services/PlanningsAPI";
+import SitesAPI from "../services/SitesAPI";
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState([1]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  //const [isRoleUser, setisRoleUser] = useState(false);
   const [isRoleUser, setisRoleUser] = useState(false);
   const [plannings, setPlannings] = useState([]);
 
@@ -23,22 +25,22 @@ const ServicesPage = () => {
     try {
       const data = await PlanningsAPI.findAll();
       // console.log("  tableau de planning  ==  ", data);
+      setisRoleUser(window.localStorage.getItem("UserRole") ? true : false);
       setPlannings(data);
-
       setLoading(false);
     } catch (error) {
       toast.error("Imposssible de charger les plannings");
     }
   };
 
-  const getServiceInfo = (service, data) => {
-    //setLoading(true);
+  const getServiceInfo = async (service) => {
     try {
       UsersAPI.find(service.planning.user).then((user) => {
         service.firstName = user.firstName;
         service.lastName = user.lastName;
-        setServices(data);
-        setLoading(false);
+        return user.firstName + " " + user.lastName;
+        //  setServices(data);
+        //  setLoading(false);
       });
     } catch (error) {
       toast.error("Imposssible de charger l'agenda des services");
@@ -49,8 +51,9 @@ const ServicesPage = () => {
     try {
       ServicesAPI.findAll().then((data) => {
         let role = window.localStorage.getItem("UserRole") ? true : false;
+        console.log("Role ", role);
         setisRoleUser(role);
-
+        console.log("data from fetchservices", data);
         data.map((item) => {
           if (item.actif == true) {
             item.actif = "En Cours";
@@ -62,6 +65,9 @@ const ServicesPage = () => {
           item.dateStart = item.planning.dateStart;
           getServiceInfo(item, data);
         });
+
+        setServices(data);
+        setLoading(false);
         // console.log(" liste des service avant UserInfo ******** ", data);
         // data.planning.user = await UsersAPI.find(25);
         // console.log(" liste des service Apres userInfo ******** ", data);
@@ -72,6 +78,15 @@ const ServicesPage = () => {
       toast.error("Imposssible de charger l'agenda des services");
     }
   };
+  /*  const fetchSites =  () => {
+    try {
+      const data = await SitesAPI.findAll();
+      
+     
+    } catch (error) {
+      toast.error("Erreur lors du chargement des sites !");
+    }
+  }; */
 
   useEffect(() => {
     fetchServices();
@@ -90,9 +105,7 @@ const ServicesPage = () => {
   const handleDelete = async (id) => {
     const originalServices = [...services];
     setServices(services.filter((service) => service.id !== id));
-
     try {
-      //
       await ServicesAPI.delete(id);
       toast.success("Le service a bien été supprimé");
     } catch (error) {
@@ -162,6 +175,7 @@ const ServicesPage = () => {
             <tr>
               <th>Agent</th>
               <th>Début service</th>
+              <th>Fin service</th>
               <th>Description</th>
               <th>Etat service</th>
               {/*   <th>Latitude</th>
@@ -180,6 +194,7 @@ const ServicesPage = () => {
 
                   <td>{formatDate(service.dateStart)}</td>
                   <td>{service.description}</td>
+                  <td>{service.dateEnd}</td>
                   <td>{service.actif}</td>
                   {/*  <td>{service.lat}</td>
                   <td>{service.lng}</td> */}

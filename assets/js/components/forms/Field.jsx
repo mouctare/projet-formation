@@ -22,6 +22,7 @@ const Field = ({
       id={name}
       className={"form-control" + (error && " is-invalid")}
       required={required}
+
       // pattern={pattern}
     />
     {error && <p className="invalid-feedback">{error}</p>}

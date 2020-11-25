@@ -38,6 +38,7 @@ nav ul li a {
 nav ul li a:hover {
   color: #e0e2db;
 }
+
 .logo {
   display: flex;
   justify-content: space-between;
@@ -655,4 +656,19 @@ footer {
 
 .link ~ a {
   text-decoration: none;
+}
+
+.input-services {
+  width: 100%;
+}
+.input-services {
+  font-size: 1rem;
+  width: 100%;
+  padding: 0.5rem 1.1rem;
+  border-radius: 25rem;
+  padding: 0.25rem, 0.5rem;
+  background: rgb(white);
+  color: var(--darkBrown);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  outline: none;
 }
