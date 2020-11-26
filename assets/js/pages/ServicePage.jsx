@@ -1,27 +1,53 @@
-import React, { useState, useEffect } from "react";
-import ServicesAPI from "../services/ServicesAPI";
-import PlanningsAPI from "../services/PlanningsAPI";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Field from "../components/forms/Field";
-import { Form, FormLabel } from "react-bootstrap";
 import { formatDate } from "../services/FormatDateAPI";
+import PlanningsAPI from "../services/PlanningsAPI";
+import ServicesAPI from "../services/ServicesAPI";
 
 const ServicePage = ({ history }) => {
-  const [service, setServices] = useState({
-    description: "",
-    actif: false,
-    planningId: "",
-  });
+  const [service, setServices] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [plannings, setPlannings] = useState([]);
+  const [userConnecte, setUserConnecte] = useState("");
+  const [nbPlanning, setNbPlanning] = useState("");
 
   const fetchPlannings = async () => {
     try {
       const data = await PlanningsAPI.findAll();
+      let test = true;
+      let serviceDatas = [];
+      test &&
+        data.map((item) => {
+          setUserConnecte(item.user.lastName + " " + item.user.firstName);
+          test = false;
+          serviceDatas = [
+            ...serviceDatas,
+            {
+              description: "",
+              actif: false,
+              planningId: item.id,
+            },
+          ];
+        });
+
+      let message = "";
+      if (data.length > 1) {
+        message = " voici votre liste de plannings";
+      }
+      if (data.length == 1) {
+        message = " voici votre planning";
+      }
+      if (data.length == 0) {
+        message = " vous n'avez aucun planning pour l'instant";
+      }
+      setNbPlanning(message);
       setPlannings(data);
+      setServices(serviceDatas);
+
       setLoading(false);
-      //console.log("data mapping plannings servicePage ", data);
+      userConnecte = console.log("data mapping plannings servicePage ", data);
     } catch (error) {
       toast.error("Imposssible de charger les plannings");
     }
@@ -39,14 +65,27 @@ const ServicePage = ({ history }) => {
     );
   };
 
-  const handleChange = ({ currentTarget }) => {
+  const handleChange = ({ currentTarget }, id) => {
     const { name, value } = currentTarget;
-    setServices({ ...service, [name]: value });
+    const target = service.find((element) => {
+      return id === element.planningId;
+    });
+    const results = service.filter((element) => {
+      return id != element.planningId;
+    });
+    setServices([
+      ...results,
+      {
+        ...target,
+        [name]: value,
+      },
+    ]);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     service.actif = true;
+
     console.log(" service values from form", service);
     try {
       await ServicesAPI.create(service)
@@ -55,45 +94,53 @@ const ServicePage = ({ history }) => {
 
       toast.success("La prise de service a bien été prise en compte");
       history.replace("/services");
-    } catch ({ response }) {
-      const { violations } = response.data;
-      if (violations) {
-        violations.forEach(({ propertyPath, message }) => {
-          apiErros[propertyPath] = message;
-        });
-        setErrors(apiErros);
-        toast.error("Des erreurs dans votre formulaire !");
-      }
-    }
+    } catch (error) {}
   };
 
   let isVisible = false;
 
-  const priseServiceActive = (id) => {
+  const validateService = async (event, id, path) => {
+    event.preventDefault();
     isVisible = true;
     console.log(" isVisible  = + = id ", isVisible + " " + id);
-    service.actif = true;
-    service.planningId = id;
-    console.log(" service values from form priseServiceActive", service);
+    const target = {
+      ...service.find((element) => {
+        return id === element.planningId;
+      }),
+      actif: true,
+      planning: path,
+    };
+
     try {
-      ServicesAPI.create(service)
+      await ServicesAPI.create(target)
         .then((data) => console.log("Try..", data))
         .catch((data) => console.log("Catch..", data));
-    } catch ({ response }) {
-      const { violations } = response.data;
-      if (violations) {
-        violations.forEach(({ propertyPath, message }) => {
-          apiErros[propertyPath] = message;
-        });
-        setErrors(apiErros);
-        toast.error("Des erreurs dans votre formulaire !");
-      }
+      console.log("target", target);
+
+      toast.success("La prise de service a bien été prise en compte");
+      history.replace("/services");
+    } catch (error) {}
+
+    console.log(" service values from form priseServiceActive", service);
+    try {
+      // ServicesAPI.create(service)
+      //   .then((data) => console.log("Try..", data))
+      //   .catch((data) => console.log("Catch..", data));
+    } catch (error) {
+      toast.error("Des erreurs dans votre formulaire !");
     }
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      {
+        <div className="card my -3">
+          <h3 className="card-header">
+            Bonjour Mr. {userConnecte} {nbPlanning}
+          </h3>
+        </div>
+      }
+      <>
         <table className="table table-hover">
           <thead>
             <tr>
@@ -104,9 +151,12 @@ const ServicePage = ({ history }) => {
             </tr>
           </thead>
           <tbody>
-            {plannings.map((pl) => {
+            {plannings.map((pl, index) => {
               const { id, dateStart, dateEnd } = pl;
-
+              console.log("id plannin", id);
+              const data = service.find((element) => {
+                return element.planningId === id;
+              });
               return (
                 <tr key={id}>
                   <td>{formatDate(dateStart)}</td>
@@ -117,15 +167,15 @@ const ServicePage = ({ history }) => {
                       className="service"
                       name="description"
                       placeholder="Description du rapport"
-                      onChange={handleChange}
+                      onChange={(event) => handleChange(event, id)}
                       value={service.description}
                     />
-                    {/*  <div class="drink-form__input">
+                    {/*   <div className="drink-form__input">
                       <input
                         type="text"
                         name="service"
                         onChange={handleChange}
-                        class="input-services"
+                        className="input-services"
                         placeholder="Description du rapport"
                         value={service.description}
                       />
@@ -135,8 +185,10 @@ const ServicePage = ({ history }) => {
                     {priseService(pl.dateStart) && (
                       <button
                         className="btn btn-sm btn-primary mr-1 "
-                        hidden={isVisible}
-                        onClick={priseServiceActive(pl.id)}
+                        hidden={false}
+                        onClick={(event) =>
+                          validateService(event, pl.id, pl["@id"])
+                        }
                       >
                         effectuer votre prise de service
                       </button>
@@ -147,7 +199,7 @@ const ServicePage = ({ history }) => {
             })}
           </tbody>
         </table>
-      </form>
+      </>
     </>
   );
 };
