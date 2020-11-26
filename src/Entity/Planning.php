@@ -33,7 +33,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  
  *  normalizationContext={
  *   "groups"={"plannings_read"}
- * } 
+ * } ,
+ * denormalizationContext={"groups"={"plannings_write"}}
  * )
  * @ApiFilter(SearchFilter::class)
  * @ApiFilter(OrderFilter::class)
@@ -44,7 +45,7 @@ class Planning
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"plannings_read","users_read","sites_read","services_read"})
+     * @Groups({"plannings_read","users_read","sites_read","plannings_write","services_read"})
      */
     private $id;
 
@@ -96,7 +97,7 @@ class Planning
 
     /**
      * @ORM\OneToMany(targetEntity=Service::class, mappedBy="planning",  cascade="persist")
-     *@Groups({"plannings_read"}) 
+     *@Groups({"plannings_read", "plannings_write"}) 
      */
     private $services;
 

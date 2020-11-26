@@ -15,27 +15,27 @@ const ServicesPage = () => {
   const [currentPage, setCurrentPage] = useState([1]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  //const [isRoleUser, setisRoleUser] = useState(false);
   const [isRoleUser, setisRoleUser] = useState(false);
-  // const [plannings, setPlannings] = useState([]);
+  const [plannings, setPlannings] = useState([]);
 
   const itemsPerPage = 10;
 
-  /*  const fetchPlannings = async () => {
+  const fetchPlannings = async () => {
     try {
       const data = await PlanningsAPI.findAll();
-      // console.log("  tableau de planning  ==  ", data);
-      setisRoleUser(window.localStorage.getItem("UserRole") ? true : false);
+      const roles = JSON.parse(window.localStorage.getItem("UserRole"));
+      setisRoleUser(roles?.user);
+      console.log("Role ", roles);
       setPlannings(data);
       setLoading(false);
     } catch (error) {
       toast.error("Imposssible de charger les plannings");
     }
-  }; */
+  };
 
   const getServiceInfo = async (service) => {
     try {
-      UsersAPI.find(service.planning.user).then((user) => {
+      await UsersAPI.find(service.planning.user).then((user) => {
         service.firstName = user.firstName;
         service.lastName = user.lastName;
         return user.firstName + " " + user.lastName;
@@ -47,12 +47,11 @@ const ServicesPage = () => {
     }
   };
 
-  const fetchServices = () => {
+  const fetchServices = async () => {
     try {
-      ServicesAPI.findAll().then((data) => {
-        let role = window.localStorage.getItem("UserRole") ? true : false;
-        console.log("Role ", role);
-        setisRoleUser(role);
+      await ServicesAPI.findAll().then((data) => {
+        const roles = JSON.parse(window.localStorage.getItem("UserRole"));
+        setisRoleUser(roles?.user);
         console.log("data from fetchservices", data);
         data.map((item) => {
           if (item.actif == true) {
@@ -71,31 +70,19 @@ const ServicesPage = () => {
         // console.log(" liste des service avant UserInfo ******** ", data);
         // data.planning.user = await UsersAPI.find(25);
         // console.log(" liste des service Apres userInfo ******** ", data);
-
         console.log(" Nouvelle list ", data);
       });
     } catch (error) {
       toast.error("Imposssible de charger l'agenda des services");
     }
   };
-  /*  const fetchSites =  () => {
-    try {
-      const data = await SitesAPI.findAll();
-      
-     
-    } catch (error) {
-      toast.error("Erreur lors du chargement des sites !");
-    }
-  }; */
 
   useEffect(() => {
     fetchServices();
-    //  fetchPlannings();
+    fetchPlannings();
   }, []);
 
   const handlePageChange = (page) => setCurrentPage(page);
-
-  // Gestion de la recherche
   const handleSearch = ({ currentTarget }) => {
     setSearch(currentTarget.value);
     setCurrentPage(1);
@@ -103,9 +90,9 @@ const ServicesPage = () => {
 
   const handleDelete = async (id) => {
     const originalServices = [...services];
-    setServices(services.filter((service) => service.id !== id));
     try {
       await ServicesAPI.delete(id);
+      setServices(services.filter((service) => service.id !== id));
       toast.success("Le service a bien été supprimé");
     } catch (error) {
       toast.error("Echec lors de la suppression du  service ");
@@ -162,11 +149,6 @@ const ServicesPage = () => {
           />
         </div>
       )}
-      <div className="card my -3">
-        {isRoleUser && (
-          <h1 className="card-header"> voici votre planning ! </h1>
-        )}
-      </div>
 
       {!isRoleUser && (
         <table className="tab table-hover">
@@ -177,8 +159,8 @@ const ServicesPage = () => {
               <th>Fin service</th>
               <th>Description</th>
               <th>Etat service</th>
-              {/*   <th>Latitude</th>
-              <th>Logitude</th> */}
+              <th>crétion service</th>
+              <th>date actuelle</th>
               <th></th>
             </tr>
           </thead>
@@ -190,13 +172,12 @@ const ServicesPage = () => {
                   <td>
                     {service.firstName} {service.lastName}
                   </td>
-
                   <td>{formatDate(service.dateStart)}</td>
+                  <td>{formatDate(service.dateEnd)}</td>
                   <td>{service.description}</td>
-                  <td>{service.dateEnd}</td>
                   <td>{service.actif}</td>
-                  {/*  <td>{service.lat}</td>
-                  <td>{service.lng}</td> */}
+                  <td>{formatDate(service.createdAt)}</td>
+                  <td>{formatDate(service.dateFin)}</td>
                   <td>
                     <button
                       className="btn btn-sm btn-danger"

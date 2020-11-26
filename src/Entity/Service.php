@@ -64,11 +64,17 @@ class Service
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de prise service  doit etre renseignée ")
+     * @Groups({"services_read","plannings_read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * @Assert\NotBlank(message="La date de prise service  doit etre renseignée ")
+     * @Groups({"services_read","plannings_read"})
      */
     private $dateFin;
 
@@ -92,11 +98,7 @@ class Service
         return $this;
     }
 
-  
-
-   
-
-    public function getActif(): ?bool
+   public function getActif(): ?bool
     {
         return $this->actif;
     }
@@ -125,7 +127,7 @@ class Service
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt($createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -137,7 +139,7 @@ class Service
         return $this->dateFin;
     }
 
-    public function setDateFin(\DateTimeInterface $dateFin): self
+    public function setDateFin( $dateFin): self
     {
         $this->dateFin = $dateFin;
 

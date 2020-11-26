@@ -48,7 +48,7 @@ const PlanningPage = ({ history, match }) => {
   const fetchPlanning = async (id) => {
     try {
       const { dateStart, dateEnd, user, site } = await PlanningsAPI.find(id);
-      setPlanning({ dateStart, dateEnd, user: user, site: site.id });
+      setPlanning({ dateStart, dateEnd, user: user.id, site: site.id });
       setLoading(false);
     } catch (error) {
       toast.error("Le planning n'a pas pu étre chargé");

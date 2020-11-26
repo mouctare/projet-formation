@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDom from "react-dom";
 import { HashRouter, Route, Switch, withRouter } from "react-router-dom";
 import "../css/app.css";
@@ -39,12 +39,19 @@ import "react-toastify/dist/ReactToastify.css";
 
 console.log("Hello world !!!");
 
-AuthAPI.setup();
-
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
     AuthAPI.isAuthenticated()
   );
+
+  const init = async () => {
+    await AuthAPI.setup();
+    setIsAuthenticated(AuthAPI.isAuthenticated());
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   const NavbarWithRouter = withRouter(Navbar);
 

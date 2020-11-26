@@ -19,10 +19,8 @@ const PlanningsPage = (props) => {
   const fetchPlannings = async () => {
     try {
       const data = await PlanningsAPI.findAll();
-
       setisRoleUser(window.localStorage.getItem("UserRole") ? true : false);
       setPlannings(data);
-
       setLoading(false);
     } catch (error) {
       toast.error("Imposssible de charger les plannings");
@@ -48,7 +46,6 @@ const PlanningsPage = (props) => {
     setPlannings(plannings.filter((planning) => planning.id !== id));
 
     try {
-      //
       await PlanningsAPI.delete(id);
       toast.success("Le planning a bien été supprimé");
     } catch (error) {
@@ -57,9 +54,6 @@ const PlanningsPage = (props) => {
     }
   };
 
-  // const formatDate = (str) => moment(str).format("YYYY-MM-DD HH:mm");
-
-  // Filtrage des agents en function de la recherche
   let filteredPlannings;
   if (search === "") {
     filteredPlannings = plannings;

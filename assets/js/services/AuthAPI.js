@@ -6,21 +6,41 @@ import jwtDecode from "jwt-decode";
  */
 function logout() {
   window.localStorage.removeItem("authToken");
+  window.localStorage.removeItem("UserId");
+  window.localStorage.removeItem("UserRole");
   delete axios.defaults.headers["Authorization"];
 }
 /**
  * Requete HTTP d'authentification et stockage du token le storage et sur Axios
  * @param {Object} credentials
  */
-function authenticate(credentials) {
-  return axios
+async function authenticate(credentials) {
+  return await axios
     .post("http://localhost:8000/api/login_check", credentials)
     .then((response) => response.data.token)
     .then((token) => {
+      const { roles, id } = jwtDecode(token);
       // Ici je stocke le token dans mon localStorage
       window.localStorage.setItem("authToken", token);
       // On prévient Axios  qu'on a maintenant un header par défaut sur toutes nos futures requetes HTTP
       setAxiosToken(token);
+      window.localStorage.setItem("UserId", id);
+      // Ici je stocke le role_user dans mon localStorage
+      console.log("test : ", roles);
+      let results = {};
+      roles.forEach((elt) => {
+        let role = elt.split("_")[1];
+        role = role.toLowerCase();
+        results = {
+          ...results,
+          [role]: elt,
+        };
+      });
+      console.log("tokennnn", results);
+      window.localStorage.setItem("UserRole", JSON.stringify(results));
+    })
+    .catch((e) => {
+      console.log(e);
     });
 }
 
@@ -41,17 +61,6 @@ function setup() {
   const token = window.localStorage.getItem("authToken");
   if (token) {
     const { exp: expiration } = jwtDecode(token);
-    const { roles: rolees } = jwtDecode(token);
-    const { idUser: id } = jwtDecode(token);
-    window.localStorage.setItem("UserId", id);
-    // Ici je stocke le role_user dans mon localStorage
-    rolees.forEach((elt) => {
-      if (elt == "ROLE_USER") {
-        window.localStorage.setItem("UserRole", elt);
-      } else {
-        window.localStorage.setItem("UserRole", "");
-      }
-    });
 
     if (expiration * 1000 > new Date().getTime()) {
       setAxiosToken(token);
@@ -71,7 +80,6 @@ function isAuthenticated() {
     if (expiration * 1000 > new Date().getTime()) {
       return true;
     }
-    return false;
   }
   return false;
 }

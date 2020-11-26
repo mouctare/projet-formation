@@ -31,7 +31,7 @@ const UserPage = ({ match, history }) => {
   });
   const [loading, setLoading] = useState(false);
 
-  const formatDate = (str) => moment(str).format("YYYY-MM-DDTHH:mm");
+  //const formatDate = (str) => moment(str).format("YYYY-MM-DDTHH:mm");
   const [editing, setEditing] = useState(false);
 
   const fetchUser = async (id) => {
@@ -86,9 +86,9 @@ const UserPage = ({ match, history }) => {
       apiErros.password = "Le mot de passe de l'agent est obligatiore";
     if (!user.firstName)
       apiErros.firstName = "Le prénom de l'agent est obligatoire";
-    if (!user.cardPro || user.cardPro)
+    /*  if (!user.cardPro || user.cardPro)
       apiErros.cardPro =
-        "Le numéro de la carte professionnelle  de l'agent est obligatoire et elle doit avoir 25 caractères";
+        "Le numéro de la carte professionnelle  de l'agent est obligatoire et elle doit avoir 25 caractères"; */
 
     if (!user.dateCreatedCarPro)
       apiErros.dateCreatedCarPro =
@@ -179,8 +179,8 @@ const UserPage = ({ match, history }) => {
             name="dateCreatedCarPro"
             label="Date"
             placeholder="Date de création de la carte professionnelle de l'agent"
-            type="datetime-local"
-            value={formatDate(user.dateCreatedCarPro)}
+            type="date"
+            value={user.dateCreatedCarPro}
             onChange={handleChange}
             error={errors.dateCreatedCarPro}
           />
@@ -188,8 +188,8 @@ const UserPage = ({ match, history }) => {
             name="expiryDateCardPro"
             label="Expiration"
             placeholder="Date d'éxpiration de la carte professionnelle de l'agent"
-            type="datetime-local"
-            value={formatDate(user.expiryDateCardPro)}
+            type="date"
+            value={user.expiryDateCardPro}
             onChange={handleChange}
             error={errors.expiryDateCardPro}
           />

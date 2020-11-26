@@ -110,18 +110,18 @@ class User implements UserInterface
     private $cardPro;
 
      /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="date")
      * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
-     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     
      * @Assert\NotBlank(message="La date de création de la carte professionnnelle  doit etre renseignée ")
      * 
       */
       private $dateCreatedCarPro;
 
       /**
-       * @ORM\Column(type="datetime")
+       * @ORM\Column(type="date")
        * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
-       * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+       
        * @Assert\NotBlank(message="La date d'expiration de la carte professionnnelle  doit etre renseignée ")
        */
        private $expiryDateCardPro;
