@@ -45,9 +45,7 @@ const ServicePage = ({ history }) => {
       setNbPlanning(message);
       setPlannings(data);
       setServices(serviceDatas);
-
       setLoading(false);
-      userConnecte = console.log("data mapping plannings servicePage ", data);
     } catch (error) {
       toast.error("Imposssible de charger les plannings");
     }
@@ -56,6 +54,10 @@ const ServicePage = ({ history }) => {
   useEffect(() => {
     fetchPlannings();
   }, []);
+
+  /**
+   * Pour afficher le bouton de prise de service
+   */
 
   const priseService = (dateStart) => {
     return true;
@@ -82,22 +84,11 @@ const ServicePage = ({ history }) => {
     ]);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    service.actif = true;
-
-    console.log(" service values from form", service);
-    try {
-      await ServicesAPI.create(service)
-        .then((data) => console.log("Try..", data))
-        .catch((data) => console.log("Catch..", data));
-
-      toast.success("La prise de service a bien été prise en compte");
-      history.replace("/services");
-    } catch (error) {}
-  };
-
   let isVisible = false;
+
+  /**
+   * Effectuer la prise de service éffective
+   */
 
   const validateService = async (event, id, path) => {
     event.preventDefault();
@@ -119,15 +110,8 @@ const ServicePage = ({ history }) => {
 
       toast.success("La prise de service a bien été prise en compte");
       history.replace("/services");
-    } catch (error) {}
-
-    console.log(" service values from form priseServiceActive", service);
-    try {
-      // ServicesAPI.create(service)
-      //   .then((data) => console.log("Try..", data))
-      //   .catch((data) => console.log("Catch..", data));
     } catch (error) {
-      toast.error("Des erreurs dans votre formulaire !");
+      console.log(" service values from form priseServiceActive", service);
     }
   };
 
@@ -170,16 +154,6 @@ const ServicePage = ({ history }) => {
                       onChange={(event) => handleChange(event, id)}
                       value={service.description}
                     />
-                    {/*   <div className="drink-form__input">
-                      <input
-                        type="text"
-                        name="service"
-                        onChange={handleChange}
-                        className="input-services"
-                        placeholder="Description du rapport"
-                        value={service.description}
-                      />
-                    </div> */}
                   </td>
                   <td>
                     {priseService(pl.dateStart) && (
@@ -193,6 +167,9 @@ const ServicePage = ({ history }) => {
                         effectuer votre prise de service
                       </button>
                     )}
+                    <button className="btn btn-sm btn-primary">
+                      Valider votre fin de service
+                    </button>
                   </td>
                 </tr>
               );

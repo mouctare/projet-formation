@@ -39,6 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *        "availabilities_get_subresource"={"path"="/agents/{id}/disponibilites"},
  *        "reports_get_subresource"={"path"="/agents/{id}/rapports"},
  *        "plannings_get_subresource"={"path"="/agents/{id}/plannings"},
+ *        "services_get_subresource"={"path"="/agents/{id}/services"},
  *        
  *  },
  *    normalizationContext={
@@ -59,13 +60,13 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read", "services_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read", "services_read"})
      * @Assert\NotBlank(message="L'email doit etre renseigné ! ")
      *@Assert\Email(message="L' adresse email doit avoir un format valide ! ")
      */
@@ -85,7 +86,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read", "services_read"})
      * @Assert\NotBlank(message="Le prénom  de l'agent est obligatoire")
      * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3  et 255 caractères", max=255,
      * maxMessage="Le prénom doit faire entre 3  et 255 caractères")
@@ -94,7 +95,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read", "services_read"})
      * @Assert\NotBlank(message="Le nom de famille est obligatoire")
      * @Assert\Length(min=3, minMessage="Le nom  de famille doit faire entre 3 et 255 caractères ")
      */
@@ -102,7 +103,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=1000)
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read", "services_read"})
      * @Assert\NotBlank(message="La carte professionnelle doit étre composéé de 19 caractères ")
      * 
      * 
@@ -111,7 +112,7 @@ class User implements UserInterface
 
      /**
      * @ORM\Column(type="date")
-     * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
+     * @Groups({"users_read","plannings_read","reports_read","availabilities_read", "services_read"})
      
      * @Assert\NotBlank(message="La date de création de la carte professionnnelle  doit etre renseignée ")
      * 
@@ -120,7 +121,7 @@ class User implements UserInterface
 
       /**
        * @ORM\Column(type="date")
-       * @Groups({"users_read","plannings_read","reports_read","availabilities_read"})
+       * @Groups({"users_read","plannings_read","reports_read","availabilities_read", "services_read"})
        
        * @Assert\NotBlank(message="La date d'expiration de la carte professionnnelle  doit etre renseignée ")
        */
@@ -147,6 +148,16 @@ class User implements UserInterface
      */
     private $reports;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Service::class, mappedBy="user")
+     * @Groups({"users_read"})
+     * @ApiSubresource
+     */
+    private $services;
+
+    
+
+   
   
 
     public function __construct()
@@ -154,6 +165,8 @@ class User implements UserInterface
         $this->availabilities = new ArrayCollection();
         $this->plannings = new ArrayCollection();
         $this->reports = new ArrayCollection();
+        $this->services = new ArrayCollection();
+      
        
     }
 
@@ -385,5 +398,41 @@ class User implements UserInterface
 
         return $this;
     }
- }
+
+    /**
+     * @return Collection|Service[]
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): self
+    {
+        if (!$this->services->contains($service)) {
+            $this->services[] = $service;
+            $service->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): self
+    {
+        if ($this->services->contains($service)) {
+            $this->services->removeElement($service);
+            // set the owning side to null (unless already changed)
+            if ($service->getUser() === $this) {
+                $service->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+   
+    }
+
+   
+ 
 

@@ -17,7 +17,8 @@ const UsersPage = (props) => {
   const fetchUsers = async () => {
     try {
       const data = await UsersAPI.findAll();
-      setisRoleUser(window.localStorage.getItem("UserRole") ? true : false);
+      const roles = JSON.parse(window.localStorage.getItem("UserRole"));
+      setisRoleUser(roles?.user);
       setUsers(data);
       setLoading(false);
     } catch (error) {

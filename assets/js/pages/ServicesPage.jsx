@@ -20,39 +20,12 @@ const ServicesPage = () => {
 
   const itemsPerPage = 10;
 
-  const fetchPlannings = async () => {
-    try {
-      const data = await PlanningsAPI.findAll();
-      const roles = JSON.parse(window.localStorage.getItem("UserRole"));
-      setisRoleUser(roles?.user);
-      console.log("Role ", roles);
-      setPlannings(data);
-      setLoading(false);
-    } catch (error) {
-      toast.error("Imposssible de charger les plannings");
-    }
-  };
-
-  const getServiceInfo = async (service) => {
-    try {
-      await UsersAPI.find(service.planning.user).then((user) => {
-        service.firstName = user.firstName;
-        service.lastName = user.lastName;
-        return user.firstName + " " + user.lastName;
-        //  setServices(data);
-        //  setLoading(false);
-      });
-    } catch (error) {
-      toast.error("Imposssible de charger l'agenda des services");
-    }
-  };
-
   const fetchServices = async () => {
     try {
       await ServicesAPI.findAll().then((data) => {
         const roles = JSON.parse(window.localStorage.getItem("UserRole"));
         setisRoleUser(roles?.user);
-        console.log("data from fetchservices", data);
+        console.log("data from service", data);
         data.map((item) => {
           if (item.actif == true) {
             item.actif = "En Cours";
@@ -62,24 +35,19 @@ const ServicesPage = () => {
           data.actif = item.actif;
           item.dateEnd = item.planning.dateEnd;
           item.dateStart = item.planning.dateStart;
-          getServiceInfo(item, data);
         });
 
         setServices(data);
         setLoading(false);
-        // console.log(" liste des service avant UserInfo ******** ", data);
-        // data.planning.user = await UsersAPI.find(25);
-        // console.log(" liste des service Apres userInfo ******** ", data);
         console.log(" Nouvelle list ", data);
       });
     } catch (error) {
-      toast.error("Imposssible de charger l'agenda des services");
+      toast.error("Un erreur est survenue veuillez réessayer");
     }
   };
 
   useEffect(() => {
     fetchServices();
-    fetchPlannings();
   }, []);
 
   const handlePageChange = (page) => setCurrentPage(page);
@@ -126,16 +94,6 @@ const ServicesPage = () => {
       {!isRoleUser && (
         <div className="mb-3 d-flex justify-content-between align-items-center">
           <h3>Liste des services En cours ou terminés </h3>
-          {/*  <div className="col-lg-5">
-            <div className="card">
-              <div className="card-header">
-                <Link to="/services/new" className="btn btn-primary">
-                  Effectuer un service
-                </Link>
-              </div>
-            </div>
-          </div>
-          */}
         </div>
       )}
       {!isRoleUser && (
@@ -161,7 +119,7 @@ const ServicesPage = () => {
               <th>Etat service</th>
               <th>crétion service</th>
               <th>date actuelle</th>
-              <th></th>
+              <th>Retard </th>
             </tr>
           </thead>
 
@@ -170,7 +128,7 @@ const ServicesPage = () => {
               {paginatedServices.map((service) => (
                 <tr key={service.id}>
                   <td>
-                    {service.firstName} {service.lastName}
+                    {service.user.firstName} {service.user.lastName}
                   </td>
                   <td>{formatDate(service.dateStart)}</td>
                   <td>{formatDate(service.dateEnd)}</td>
@@ -178,14 +136,16 @@ const ServicesPage = () => {
                   <td>{service.actif}</td>
                   <td>{formatDate(service.createdAt)}</td>
                   <td>{formatDate(service.dateFin)}</td>
-                  <td>
+                  <td>{service.retard}</td>
+
+                  {/*  <td>
                     <button
                       className="btn btn-sm btn-danger"
                       onClick={() => handleDelete(service.id)}
                     >
                       Supprimer
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

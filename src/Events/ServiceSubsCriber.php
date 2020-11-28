@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use ApiPlatform\Core\EventListener\EventPriorities;
+use DateTimeZone;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 
@@ -14,37 +15,60 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ServiceSubsCriber implements EventSubscriberInterface 
 {
-   
-  // Toute classe qui implements le EventSubscriberInterface se doit d'avoir la methode =>
-  public static function getSubscribedEvents() 
-  {
-    // Cette function renvoit un tableau auquel on va souscrire à des événments
-    return [
-    // La clée du tableau est une constante qui se trouve dans la class kernelEvents qui s'appelle view
-    // Au moment du view, on va avoir une méthode qui s'appelle setUserForPlanning et qui devra etre appellé sur une priorité
-    // Et pour avoir la priorité il faut applé la class EventPriorities et applé la constant PRE_VALIDATE
-          KernelEvents::VIEW => ['setUserForService', EventPriorities::PRE_VALIDATE]
-      
-    ];
-   
-  }
-// On va crée la méthode setUserForPlanning
-   // Quand on est branché un evenement view il faut avoir une instance de EiewEvent
-   public function setUserForService(ViewEvent $event) 
-   {
-       $service = $event->getControllerResult();
-       $method = $event->getRequest()->getMethod();
-       if($service instanceof Service && $method === "POST") {
-     
+  private $security;
 
-        if(empty($service->getDateFin())) {
-          $service->setDateFin(new \DateTime());
+  public function __construct(Security $security) 
+  {
+      $this->security = $security;
+  }
+
+  public static function getSubscribedEvents()
+  {
+      return [
+          KernelEvents::VIEW => ['setUserForService', EventPriorities::PRE_VALIDATE]
+      ];
+  }
+  public function setUserForService(ViewEvent $event) 
+  {
+      $services = $event->getControllerResult();
+      $method = $event->getRequest()->getMethod();
+      if($services instanceof Service && $method === "POST") {
+     // Choper l'utilisateur actuellement connecté
+        $user = $this->security->getUser();
+   // Assigner l'utisateur aux disponibilité qu'il vient de créer
+       $services->setUser($user);
+      
+          // Attention cette fonction va etre applé à chaque requette donc il faut préciser la methode pour stopper les apppelles
+         //dd($user);
+         if(empty($services->getDateFin())) {
+          $services->setDateFin(new \DateTime(null, new DateTimeZone('Europe/Paris')));
       }
-      if(empty($service->getCreatedAt())) {
-        $service->setCreatedAt(new \DateTime());
+      if(empty($services->getCreatedAt())) {
+        $services->setCreatedAt(new \DateTime(null, new DateTimeZone('Europe/Paris')));     
     }
            // Attention cette fonction va etre applé à chaque requette donc il faut préciser la methode pour stopper les apppelles
           //dd($user);
        }
    }
-}
+      
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

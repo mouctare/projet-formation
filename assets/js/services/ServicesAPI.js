@@ -5,6 +5,11 @@ function findAll() {
     .get("http://localhost:8000/api/services")
     .then((response) => response.data["hydra:member"]);
 }
+function find(id) {
+  return axios
+    .get("http://localhost:8000/api/services/" + id)
+    .then((response) => response.data);
+}
 
 function deleteServices(id) {
   return axios
@@ -18,6 +23,7 @@ function create(service) {
 
 export default {
   findAll,
+  find,
   create,
   delete: deleteServices,
 };

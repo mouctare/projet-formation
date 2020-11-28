@@ -19,17 +19,17 @@ const PlanningsPage = (props) => {
   const fetchPlannings = async () => {
     try {
       const data = await PlanningsAPI.findAll();
-      setisRoleUser(window.localStorage.getItem("UserRole") ? true : false);
+      const roles = JSON.parse(window.localStorage.getItem("UserRole"));
+      setisRoleUser(roles?.user);
       setPlannings(data);
       setLoading(false);
     } catch (error) {
-      toast.error("Imposssible de charger les plannings");
+      toast.error("Une erreur est survenue veuillez réessayer");
     }
   };
 
   useEffect(() => {
     fetchPlannings();
-    //console.log("tableau de planning ", plannings);
   }, []);
 
   // Gestion du changement de page
@@ -130,9 +130,7 @@ const PlanningsPage = (props) => {
                 <td data-label="Date">{formatDate(planning.dateEnd)}</td>
                 <td data-label="Nom">
                   {" "}
-                  <a href="#">
-                    {planning.site?.name} {planning.site?.city}
-                  </a>
+                  {planning.site?.name} {planning.site?.city}
                 </td>
                 {!isRoleUser && (
                   <td>

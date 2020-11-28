@@ -2,16 +2,20 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ServiceRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use Symfony\Component\Validator\Constraints as Assert;
-
+use DateInterval;
+use DateTime;
 
 /**
  * @ORM\Entity(repositoryClass=ServiceRepository::class)
@@ -35,7 +39,7 @@ class Service
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"services_read","plannings_read"})
+     * @Groups({"services_read","plannings_read", "users_read"})
      */
     private $id;
 
@@ -43,14 +47,14 @@ class Service
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"services_read","plannings_read"})
+     * @Groups({"services_read","plannings_read", "users_read"})
      */
     private $description;
 
    
      /**
      * @ORM\Column(type="boolean")
-     * @Groups({"services_read","plannings_read"})
+     * @Groups({"services_read","plannings_read", "users_read"})
      */
     private $actif;
     
@@ -64,22 +68,40 @@ class Service
 
     /**
      * @ORM\Column(type="datetime")
-     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * 
      * @Assert\NotBlank(message="La date de prise service  doit etre renseignée ")
-     * @Groups({"services_read","plannings_read"})
+     * @Groups({"services_read","plannings_read", "users_read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
+     * 
      * @Assert\NotBlank(message="La date de prise service  doit etre renseignée ")
      * @Groups({"services_read","plannings_read"})
      */
     private $dateFin;
 
-   
-   
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="services")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"services_read"})
+     */
+    private $user;
+
+  
+/**
+ * @Groups({"services_read"})
+ */
+    public function getRetard(): ?string 
+    { 
+       $interval= $this->planning->getDateStart() -> diff($this->getCreatedAt() );
+        $days = $interval->format('%a');
+        $hours = $interval->format('%h');
+        $mins = $interval->format('%i');            
+        return ($days ." jours  "  .$hours ."H:" .$mins ."mn");
+    } 
+
     public function getId(): ?int
     {
         return $this->id;
@@ -146,6 +168,19 @@ class Service
         return $this;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    
     
 
 }

@@ -16,7 +16,8 @@ const SitesPage = (props) => {
   const fetchSites = async () => {
     try {
       const data = await SitesAPI.findAll();
-      setisRoleUser(window.localStorage.getItem("UserRole") ? true : false);
+      const roles = JSON.parse(window.localStorage.getItem("UserRole"));
+      setisRoleUser(roles?.user);
       setSites(data);
       setLoading(false);
     } catch (error) {
