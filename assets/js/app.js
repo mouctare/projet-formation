@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDom from "react-dom";
 import { HashRouter, Route, Switch, withRouter } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../css/app.css";
 import Actions from "./components/Actions";
+import Footer from "./components/Footer";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
@@ -21,14 +24,11 @@ import ServicePage from "./pages/ServicePage";
 import ServicesPage from "./pages/ServicesPage";
 import SitePage from "./pages/SitePage";
 import SitesPage from "./pages/SitesPage";
-import UserPage from "./pages/UserPage";
-import UsersPage from "./pages/UsersPage";
 import SolutionPage from "./pages/SolutionPage";
+import UserPage from "./pages/UserPage";
+import DetailPlanning from "./pages/DetailPlanning";
+import UsersPage from "./pages/UsersPage";
 import AuthAPI from "./services/AuthAPI";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 //import PlanningsAPI from "./services/PlanningsAPI";
 
@@ -38,20 +38,21 @@ import "react-toastify/dist/ReactToastify.css";
 // import $ from 'jquery';
 
 console.log("Hello world !!!");
+AuthAPI.setup();
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
     AuthAPI.isAuthenticated()
   );
 
-  const init = async () => {
-    await AuthAPI.setup();
-    setIsAuthenticated(AuthAPI.isAuthenticated());
-  };
+  //const init = () => {
+  //  AuthAPI.setup();
+  //  setIsAuthenticated(AuthAPI.isAuthenticated());
+  // };
 
-  useEffect(() => {
-    init();
-  }, []);
+  // useEffect(() => {
+  //   init();
+  // }, []);
 
   const NavbarWithRouter = withRouter(Navbar);
 
@@ -90,6 +91,11 @@ const App = () => {
             <PrivateRoute path="/plannings/:id" component={PlanningPage} />
             <PrivateRoute path="/plannings" component={PlanningsPage} />
             <PrivateRoute path="/agents/:id" component={UserPage} />
+            <PrivateRoute
+              exact
+              path="/plannings/:id/services"
+              component={DetailPlanning}
+            />
             <PrivateRoute path="/agents" component={UsersPage} />
             <Route component={NoMatchPage} />
           </Switch>

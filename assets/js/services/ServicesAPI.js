@@ -10,6 +10,16 @@ function find(id) {
     .get("http://localhost:8000/api/services/" + id)
     .then((response) => response.data);
 }
+function findPalanningService(idPlanning, idUser) {
+  return axios
+    .get(
+      "http://localhost:8000/api/plannings/" +
+        idPlanning +
+        "/services/" +
+        idUser
+    )
+    .then((response) => response.data);
+}
 
 function deleteServices(id) {
   return axios

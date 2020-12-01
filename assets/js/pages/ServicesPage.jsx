@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import TableLoader from "../components/loaders/TableLoader";
 import Pagination from "../components/Pagination";
 import { formatDate } from "../services/FormatDateAPI";
 import ServicesAPI from "../services/ServicesAPI";
-import UsersAPI from "../services/UsersAPI";
 import ServicePage from "./ServicePage";
-import PlanningsAPI from "../services/PlanningsAPI";
-import SitesAPI from "../services/SitesAPI";
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
@@ -119,7 +115,7 @@ const ServicesPage = () => {
               <th>Etat service</th>
               <th>crétion service</th>
               <th>date actuelle</th>
-              <th>Retard </th>
+              <th>Retard / Heures sup </th>
             </tr>
           </thead>
 
@@ -127,9 +123,7 @@ const ServicesPage = () => {
             <tbody>
               {paginatedServices.map((service) => (
                 <tr key={service.id}>
-                  <td>
-                    {service.user.firstName} {service.user.lastName}
-                  </td>
+                  <td>{service.user.firstName + service.user.lastName}</td>
                   <td>{formatDate(service.dateStart)}</td>
                   <td>{formatDate(service.dateEnd)}</td>
                   <td>{service.description}</td>

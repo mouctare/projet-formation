@@ -29,8 +29,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "DELETE"={"path"="/plannings/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
  *          
  * },
- 
- *  
+   *subresourceOperations={
+ *       
+ *        "services_get_subresource"={"path"="/plannings/{id}/services"}
+ * 
+ * 
+ *  },
  *  normalizationContext={
  *   "groups"={"plannings_read"}
  * } ,
@@ -51,7 +55,7 @@ class Planning
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"plannings_read","users_read","sites_read","services_read"})
+     * @Groups({"plannings_read","users_read","sites_read","services_read", "plannings_write"})
      * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date de prise service  doit etre renseignée ")
      */
@@ -59,7 +63,7 @@ class Planning
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"plannings_read","users_read","sites_read","services_read"})
+     * @Groups({"plannings_read","users_read","sites_read","services_read", "plannings_write"})
      * @Assert\Type( type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de service  doit etre renseignée ")
      */
@@ -67,7 +71,7 @@ class Planning
 
      /**
      * @ORM\Column(type="datetime")
-     * @Groups({"plannings_read","users_read","sites_read","services_read"})
+     * @Groups({"plannings_read","users_read","sites_read","services_read", "plannings_write"})
      * @Assert\Type(type="\DateTime",message="La date doit etre au format yyyy -MM-DD")
      * @Assert\NotBlank(message="La date fin de mise à jour du planning   doit etre renseignée ")
     */
@@ -76,14 +80,14 @@ class Planning
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="plannings")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"plannings_read","services_read"})
+     * @Groups({"plannings_read","services_read", "plannings_write"})
      */
 
     private $user;
 
      /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="plannings")
-     *  @Groups({"plannings_read","services_read"})
+     *  @Groups({"plannings_read","services_read", "plannings_write"})
      */
     private $site;
 
@@ -97,6 +101,7 @@ class Planning
 
     /**
      * @ORM\OneToMany(targetEntity=Service::class, mappedBy="planning",  cascade="persist")
+     * @ApiSubresource
      *@Groups({"plannings_read", "plannings_write"}) 
      */
     private $services;

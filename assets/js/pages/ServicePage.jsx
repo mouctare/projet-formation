@@ -59,13 +59,20 @@ const ServicePage = ({ history }) => {
    * Pour afficher le bouton de prise de service
    */
 
-  const priseService = (dateStart) => {
+  /*  const priseService = (dateStart) => {
     return true;
     return (
       new Date(dateStart).toISOString().slice(0, 19) >
       new Date(Date.now()).toISOString().slice(0, 19)
     );
   };
+
+  const finService = (dateEnd) => {
+    return (
+      new Date(dateEnd).toISOString().slice(0, 19) ===
+      new Date(Date.now()).toISOString().slice(0, 19)
+    );
+  }; */
 
   const handleChange = ({ currentTarget }, id) => {
     const { name, value } = currentTarget;
@@ -93,7 +100,7 @@ const ServicePage = ({ history }) => {
   const validateService = async (event, id, path) => {
     event.preventDefault();
     isVisible = true;
-    console.log(" isVisible  = + = id ", isVisible + " " + id);
+    //console.log(" isVisible  = + = id ", isVisible + " " + id);
     const target = {
       ...service.find((element) => {
         return id === element.planningId;
@@ -106,7 +113,7 @@ const ServicePage = ({ history }) => {
       await ServicesAPI.create(target)
         .then((data) => console.log("Try..", data))
         .catch((data) => console.log("Catch..", data));
-      console.log("target", target);
+      // console.log("target", target);
 
       toast.success("La prise de service a bien été prise en compte");
       history.replace("/services");
@@ -115,11 +122,23 @@ const ServicePage = ({ history }) => {
     }
   };
 
+  const viewServiceDetail = async (event, planningId) => {
+    event.preventDefault();
+    isVisible = true;
+    //console.log(" isVisible  = + = id ", isVisible + " " + id);
+
+    try {
+      history.replace("/plannings/" + planningId + "/services");
+    } catch (error) {
+      console.log(" service values from form priseServiceActive", service);
+    }
+  };
+
   return (
     <>
       {
-        <div className="card my -3">
-          <h3 className="card-header">
+        <div className="mb-5 d-flex justify-content-between align-items-center">
+          <h3>
             Bonjour Mr. {userConnecte} {nbPlanning}
           </h3>
         </div>
@@ -139,6 +158,7 @@ const ServicePage = ({ history }) => {
               const { id, dateStart, dateEnd } = pl;
               console.log("id plannin", id);
               const data = service.find((element) => {
+                console.log("data", element);
                 return element.planningId === id;
               });
               return (
@@ -148,7 +168,7 @@ const ServicePage = ({ history }) => {
 
                   <td>
                     <Field
-                      className="service"
+                      className="descript"
                       name="description"
                       placeholder="Description du rapport"
                       onChange={(event) => handleChange(event, id)}
@@ -156,18 +176,19 @@ const ServicePage = ({ history }) => {
                     />
                   </td>
                   <td>
-                    {priseService(pl.dateStart) && (
+                    {!service.actif && (
                       <button
                         className="btn btn-sm btn-primary mr-1 "
-                        hidden={false}
-                        onClick={(event) =>
-                          validateService(event, pl.id, pl["@id"])
-                        }
+                        onClick={(event) => viewServiceDetail(event, pl.id)}
                       >
-                        effectuer votre prise de service
+                        Detail
                       </button>
                     )}
-                    <button className="btn btn-sm btn-primary">
+
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={(event) => validateFinService(event)}
+                    >
                       Valider votre fin de service
                     </button>
                   </td>

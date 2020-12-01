@@ -19,6 +19,12 @@ function find(id) {
     .then((response) => response.data);
 }
 
+function findPlanningServices(id) {
+  return axios
+    .get(`http://localhost:8000/api/plannings/${id}/services`)
+    .then((response) => response.data);
+}
+
 function update(id, planning) {
   return axios.put("http://localhost:8000/api/plannings/" + id, {
     ...planning,
@@ -38,6 +44,7 @@ function create(planning) {
 export default {
   findAll,
   find,
+  findPlanningServices,
   create,
   update,
   delete: deletePlanning,

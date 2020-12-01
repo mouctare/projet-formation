@@ -89,10 +89,14 @@ class Service
      */
     private $user;
 
-  
-/**
- * @Groups({"services_read"})
- */
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"services_read","plannings_read", "users_read"})
+     */
+    private $finService;
+   /**
+   * @Groups({"services_read"})
+   */
     public function getRetard(): ?string 
     { 
        $interval= $this->planning->getDateStart() -> diff($this->getCreatedAt() );
@@ -180,7 +184,17 @@ class Service
         return $this;
     }
 
-    
-    
+    public function getFinService(): ?bool
+    {
+        return $this->finService;
+    }
 
+    public function setFinService(bool $finService): self
+    {
+        $this->finService = $finService;
+
+        return $this;
+    }
+
+   
 }

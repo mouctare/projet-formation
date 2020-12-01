@@ -143,12 +143,14 @@ const PlanningsPage = (props) => {
                     <Link
                       to={"/plannings/" + planning.id}
                       className="btn btn-sm btn-primary mr-1"
+                      hidden={planning.services.length > 0}
                     >
                       Editer
                     </Link>
                     <button
                       className="btn btn-sm btn-danger"
                       onClick={() => handleDelete(planning.id)}
+                      hidden={planning.services.length > 0}
                     >
                       Supprimer
                     </button>
