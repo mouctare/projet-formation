@@ -15,7 +15,13 @@ const ServicePage = ({ history }) => {
 
   const fetchPlannings = async () => {
     try {
-      const data = await PlanningsAPI.findAll();
+      const data1 = await PlanningsAPI.findAll();
+      let data = [];
+      data1.map((item) => {
+        if (item.status != false) {
+          data.push(item);
+        }
+      });
       let test = true;
       let serviceDatas = [];
       test &&
@@ -42,8 +48,11 @@ const ServicePage = ({ history }) => {
       if (data.length == 0) {
         message = " vous n'avez aucun planning pour l'instant";
       }
+
       setNbPlanning(message);
       setPlannings(data);
+
+      console.log(" data from ServicePage ****** ==>    ", data);
       setServices(serviceDatas);
       setLoading(false);
     } catch (error) {
@@ -96,11 +105,8 @@ const ServicePage = ({ history }) => {
   /**
    * Effectuer la prise de service éffective
    */
-
   const validateService = async (event, id, path) => {
     event.preventDefault();
-    isVisible = true;
-    //console.log(" isVisible  = + = id ", isVisible + " " + id);
     const target = {
       ...service.find((element) => {
         return id === element.planningId;
@@ -108,14 +114,74 @@ const ServicePage = ({ history }) => {
       actif: true,
       planning: path,
     };
-
+    let PlanningUpdate = [];
+    plannings.map((item) => {
+      if ((item.id = id)) {
+        PlanningUpdate.status = true;
+        PlanningUpdate.dateStart = item.dateStart;
+        PlanningUpdate.dateEnd = item.dateEnd;
+        PlanningUpdate.user = item.user.id;
+        PlanningUpdate.site = item.site.id;
+      }
+    });
     try {
       await ServicesAPI.create(target)
         .then((data) => console.log("Try..", data))
         .catch((data) => console.log("Catch..", data));
-      // console.log("target", target);
-
+      console.log("target", target);
       toast.success("La prise de service a bien été prise en compte");
+      if (PlanningUpdate != null) {
+        console.log(" service PlanningUpdate  ", PlanningUpdate);
+        await PlanningsAPI.update(id, PlanningUpdate).then(data).catch(data);
+        toast.success("La prise de service a bien été notié dans le planning");
+      }
+      history.replace("/services");
+    } catch (error) {
+      console.log(" service values from form priseServiceActive", service);
+    }
+  };
+
+  /*
+action Fin de service
+*/
+  const validateFinService = async (event, id, path) => {
+    event.preventDefault();
+    const target = {
+      ...service.find((element) => {
+        return id === element.planningId;
+      }),
+      actif: true,
+      planning: path,
+    };
+    let PlanningUpdate = [];
+    plannings.map((item) => {
+      if ((item.id = id)) {
+        PlanningUpdate.status = false;
+        PlanningUpdate.dateStart = item.dateStart;
+        PlanningUpdate.dateEnd = item.dateEnd;
+        PlanningUpdate.user = item.user.id;
+        PlanningUpdate.site = item.site.id;
+      }
+    });
+
+    try {
+      console.log("target.planningId..", target.planningId);
+      await ServicesAPI.findPalanningService(target.planningId)
+        .then((data) => {
+          target.actif = false;
+          ServicesAPI.update(data[0].id, target)
+            .then((data) => console.log("Try..", data))
+            .catch((data) => console.log("Catch..", data));
+        })
+        .catch((data) => console.log("Catch..", data));
+      //console.log("target", target);
+      toast.success("La prise de service a bien été prise en compte");
+      // finaliser le service dans le planning : le status passe à False
+      if (PlanningUpdate != null) {
+        console.log(" service PlanningUpdate  ", PlanningUpdate);
+        await PlanningsAPI.update(id, PlanningUpdate).then(data).catch(data);
+        toast.success("La fin de service a bien été notié dans le planning");
+      }
       history.replace("/services");
     } catch (error) {
       console.log(" service values from form priseServiceActive", service);
@@ -156,9 +222,7 @@ const ServicePage = ({ history }) => {
           <tbody>
             {plannings.map((pl, index) => {
               const { id, dateStart, dateEnd } = pl;
-              console.log("id plannin", id);
               const data = service.find((element) => {
-                console.log("data", element);
                 return element.planningId === id;
               });
               return (
@@ -176,21 +240,27 @@ const ServicePage = ({ history }) => {
                     />
                   </td>
                   <td>
-                    {!service.actif && (
+                    {pl.status != true && pl.status != false && (
                       <button
                         className="btn btn-sm btn-primary mr-1 "
-                        onClick={(event) => viewServiceDetail(event, pl.id)}
+                        hidden={false}
+                        onClick={(event) =>
+                          validateService(event, id, pl["@id"])
+                        }
                       >
-                        Detail
+                        Effectuer votre prise de service Detail
                       </button>
                     )}
-
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={(event) => validateFinService(event)}
-                    >
-                      Valider votre fin de service
-                    </button>
+                    {pl.status && (
+                      <button
+                        className="btn btn-sm btn-warning"
+                        onClick={(event) =>
+                          validateFinService(event, id, pl["@id"])
+                        }
+                      >
+                        Valider votre fin de service
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

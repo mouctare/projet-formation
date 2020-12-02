@@ -10,7 +10,7 @@ const DetailPlanning = () => {
     try {
       await findPlanningServices(id);
       setPlannings(data);
-      console.log("***" data);
+      //  console.log("***" data);
       // setLoading(false);
     } catch (error) {
       toast.error("Les details du  planning n'ont  pas pu étre chargé");

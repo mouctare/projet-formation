@@ -10,21 +10,19 @@ function find(id) {
     .get("http://localhost:8000/api/services/" + id)
     .then((response) => response.data);
 }
-function findPalanningService(idPlanning, idUser) {
+function findPalanningService(idpl) {
   return axios
-    .get(
-      "http://localhost:8000/api/plannings/" +
-        idPlanning +
-        "/services/" +
-        idUser
-    )
-    .then((response) => response.data);
+    .get("http://localhost:8000/api/plannings/" + idpl + "/services/")
+    .then((response) => response.data["hydra:member"]);
 }
 
 function deleteServices(id) {
   return axios
     .delete("http://localhost:8000/api/services/" + id)
     .then((response) => console.log(response));
+}
+function update(id, service) {
+  return axios.put("http://localhost:8000/api/services/" + id, service);
 }
 
 function create(service) {
@@ -33,7 +31,9 @@ function create(service) {
 
 export default {
   findAll,
+  findPalanningService,
   find,
   create,
+  update,
   delete: deleteServices,
 };

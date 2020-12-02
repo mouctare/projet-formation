@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                        
  *    itemOperations={
  *          "GET"={"path"="/plannings/{id}"}, 
- *          "PUT"={"path"="/plannings/{id}", "security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
+ *          "PUT"={"path"="/plannings/{id}"},
  *          "DELETE"={"path"="/plannings/{id}","security"="is_granted('ROLE_ADMIN')", "security_message"=" Vous n'avez pas les droits suffisants pour effectuer cette opération"},
  *          
  * },
@@ -80,7 +80,7 @@ class Planning
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="plannings")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"plannings_read","services_read", "plannings_write"})
+     * @Groups({"plannings_read","services_read"})
      */
 
     private $user;
@@ -105,6 +105,11 @@ class Planning
      *@Groups({"plannings_read", "plannings_write"}) 
      */
     private $services;
+     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"plannings_read", "plannings_write", "services_read"}) 
+     */
+    private $status;
 
     public function __construct()
     {
@@ -219,6 +224,16 @@ class Planning
 
         return $this;
     }
+    public function getStatus(): ?bool
+    {
+        return $this->status;
+    }
 
+    public function setStatus(?bool $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
   
 }

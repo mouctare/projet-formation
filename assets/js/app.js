@@ -77,7 +77,7 @@ const App = () => {
           <Switch>
             <Route path="/login" component={LoginPage} />
             <Route path="/about" component={AboutPage} />
-            <PrivateRoute path="/services/:id" component={ServicePage} />
+            {/*    <PrivateRoute path="/services/:id" component={ServicePage} /> */}
             <PrivateRoute path="/services" component={ServicesPage} />
             <PrivateRoute path="/rapports/:id" component={ReportPage} />
             <PrivateRoute path="/rapports" component={ReportsPage} />
@@ -92,9 +92,8 @@ const App = () => {
             <PrivateRoute path="/plannings" component={PlanningsPage} />
             <PrivateRoute path="/agents/:id" component={UserPage} />
             <PrivateRoute
-              exact
-              path="/plannings/:id/services"
-              component={DetailPlanning}
+              path="/planning/:id/services"
+              component={ServicePage}
             />
             <PrivateRoute path="/agents" component={UsersPage} />
             <Route component={NoMatchPage} />

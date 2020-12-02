@@ -24,9 +24,9 @@ const ServicesPage = () => {
         console.log("data from service", data);
         data.map((item) => {
           if (item.actif == true) {
-            item.actif = "En Cours";
+            item.actif = "Service en cours";
           } else {
-            item.actif = "Terminée";
+            item.actif = "Service terminé";
           }
           data.actif = item.actif;
           item.dateEnd = item.planning.dateEnd;
