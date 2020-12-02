@@ -92,8 +92,7 @@ const App = () => {
             <PrivateRoute path="/plannings" component={PlanningsPage} />
             <PrivateRoute path="/agents/:id" component={UserPage} />
             <PrivateRoute
-              exact
-              path="/plannings/:id/services"
+              path="/planning/:id/services"
               component={DetailPlanning}
             />
             <PrivateRoute path="/agents" component={UsersPage} />
