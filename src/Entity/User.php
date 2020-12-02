@@ -45,6 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *    normalizationContext={
  *   "groups"={"users_read"}
  * } ,
+ * 
  *  attributes={
  *      "pagination_enabled"=true,
  *      "pagination_items_per_page"=20 

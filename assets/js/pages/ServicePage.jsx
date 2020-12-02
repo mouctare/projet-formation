@@ -4,6 +4,7 @@ import Field from "../components/forms/Field";
 import { formatDate } from "../services/FormatDateAPI";
 import PlanningsAPI from "../services/PlanningsAPI";
 import ServicesAPI from "../services/ServicesAPI";
+import { Link } from "react-router-dom";
 
 const ServicePage = ({ history }) => {
   const [service, setServices] = useState([]);
@@ -122,13 +123,14 @@ const ServicePage = ({ history }) => {
     }
   };
 
-  const viewServiceDetail = async (event, planningId) => {
+  const viewServiceDetail = async (event, id) => {
     event.preventDefault();
     isVisible = true;
     //console.log(" isVisible  = + = id ", isVisible + " " + id);
 
     try {
-      history.replace("/plannings/" + planningId + "/services");
+      console.log("Appel route with id: " + id);
+      history.push(`/plannings`);
     } catch (error) {
       console.log(" service values from form priseServiceActive", service);
     }
@@ -177,12 +179,13 @@ const ServicePage = ({ history }) => {
                   </td>
                   <td>
                     {!service.actif && (
-                      <button
-                        className="btn btn-sm btn-primary mr-1 "
-                        onClick={(event) => viewServiceDetail(event, pl.id)}
+                      <Link
+                        to={"/planning/" + id + "/services"}
+                        className="btn btn-sm btn-primary mr-1"
+                        // hidden={planning.services.length > 0}
                       >
                         Detail
-                      </button>
+                      </Link>
                     )}
 
                     <button

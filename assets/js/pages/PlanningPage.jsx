@@ -106,6 +106,7 @@ const PlanningPage = ({ history, match }) => {
     setErrors(apiErros);
     if (editing) {
       if (Object.keys(apiErros).length === 0) {
+        console.log(" planning  UPDATE ", planning);
         await PlanningsAPI.update(id, planning)
           .then((data) => {
             setErrors({});
