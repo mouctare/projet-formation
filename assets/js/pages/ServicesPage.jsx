@@ -6,6 +6,12 @@ import { formatDate } from "../services/FormatDateAPI";
 import ServicesAPI from "../services/ServicesAPI";
 import ServicePage from "./ServicePage";
 
+const STATUS_CLASSES = {
+  ENCOURS: "success",
+  TERMINE: "primary",
+  ABSCEND: "danger",
+};
+
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState([1]);
@@ -24,9 +30,9 @@ const ServicesPage = () => {
         console.log("data from service", data);
         data.map((item) => {
           if (item.actif == true) {
-            item.actif = "Service en cours";
+            item.actif = "cours";
           } else {
-            item.actif = "Service terminé";
+            item.actif = "terminé";
           }
           data.actif = item.actif;
           item.dateEnd = item.planning.dateEnd;

@@ -56,6 +56,7 @@ class Service
      /**
      * @ORM\Column(type="boolean")
      * @Groups({"services_read","plannings_read", "users_read"})
+     * 
      */
     private $actif;
     

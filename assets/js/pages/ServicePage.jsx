@@ -52,7 +52,6 @@ const ServicePage = ({ history }) => {
       setNbPlanning(message);
       setPlannings(data);
 
-      console.log(" data from ServicePage ****** ==>    ", data);
       setServices(serviceDatas);
       setLoading(false);
     } catch (error) {
@@ -99,8 +98,6 @@ const ServicePage = ({ history }) => {
       },
     ]);
   };
-
-  let isVisible = false;
 
   /**
    * Effectuer la prise de service éffective
@@ -188,18 +185,6 @@ action Fin de service
     }
   };
 
-  const viewServiceDetail = async (event, planningId) => {
-    event.preventDefault();
-    isVisible = true;
-    //console.log(" isVisible  = + = id ", isVisible + " " + id);
-
-    try {
-      history.replace("/plannings/" + planningId + "/services");
-    } catch (error) {
-      console.log(" service values from form priseServiceActive", service);
-    }
-  };
-
   return (
     <>
       {
@@ -248,7 +233,7 @@ action Fin de service
                           validateService(event, id, pl["@id"])
                         }
                       >
-                        Effectuer votre prise de service Detail
+                        Vader votre prise de service
                       </button>
                     )}
                     {pl.status && (

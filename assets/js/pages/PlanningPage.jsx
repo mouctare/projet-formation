@@ -162,7 +162,7 @@ const PlanningPage = ({ history, match }) => {
             onChange={handleChange}
           >
             {users.map((user) => (
-              <option key={user.id} value={user.id}>
+              <option key={user.id} value={user["@id"]}>
                 {user.firstName} {user.lastName}
               </option>
             ))}
