@@ -111,6 +111,8 @@ class Planning
      */
     private $status;
 
+    
+
     public function __construct()
     {
         $this->services = new ArrayCollection();
@@ -228,12 +230,5 @@ class Planning
     {
         return $this->status;
     }
-
-    public function setStatus(?bool $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-  
 }
+    

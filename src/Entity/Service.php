@@ -90,7 +90,6 @@ class Service
      * @Groups({"services_read"})
      */
     private $user;
-
  
    /**
    * @Groups({"services_read"})

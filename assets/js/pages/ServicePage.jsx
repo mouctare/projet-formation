@@ -4,6 +4,7 @@ import Field from "../components/forms/Field";
 import { formatDate } from "../services/FormatDateAPI";
 import PlanningsAPI from "../services/PlanningsAPI";
 import ServicesAPI from "../services/ServicesAPI";
+import { Link } from "react-router-dom";
 
 const ServicePage = ({ history }) => {
   const [service, setServices] = useState([]);
@@ -18,7 +19,7 @@ const ServicePage = ({ history }) => {
       const data1 = await PlanningsAPI.findAll();
       let data = [];
       data1.map((item) => {
-        if (item.status != false) {
+        if (item.status !== false) {
           data.push(item);
         }
       });
@@ -225,7 +226,7 @@ action Fin de service
                     />
                   </td>
                   <td>
-                    {pl.status != true && pl.status != false && (
+                    {pl.status != true && pl.status == false && (
                       <button
                         className="btn btn-sm btn-primary mr-1 "
                         hidden={false}
@@ -236,16 +237,15 @@ action Fin de service
                         Vader votre prise de service
                       </button>
                     )}
-                    {pl.status && (
-                      <button
-                        className="btn btn-sm btn-warning"
-                        onClick={(event) =>
-                          validateFinService(event, id, pl["@id"])
-                        }
-                      >
-                        Valider votre fin de service
-                      </button>
-                    )}
+
+                    <button
+                      className="btn btn-sm btn-warning"
+                      onClick={(event) =>
+                        validateFinService(event, id, pl["@id"])
+                      }
+                    >
+                      Valider votre fin de service
+                    </button>
                   </td>
                 </tr>
               );

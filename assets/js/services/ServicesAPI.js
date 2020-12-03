@@ -33,6 +33,7 @@ export default {
   findAll,
   findPalanningService,
   find,
+
   create,
   update,
   delete: deleteServices,

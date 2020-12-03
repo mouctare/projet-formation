@@ -93,7 +93,7 @@ const App = () => {
             <PrivateRoute path="/agents/:id" component={UserPage} />
             <PrivateRoute
               path="/planning/:id/services"
-              component={ServicePage}
+              component={DetailPlanning}
             />
             <PrivateRoute path="/agents" component={UsersPage} />
             <Route component={NoMatchPage} />
