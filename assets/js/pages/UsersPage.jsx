@@ -150,7 +150,7 @@ const UsersPage = (props) => {
                       to={"/agents/" + user.id}
                       className="btn btn-sm btn-primary mr-2"
                     >
-                      Editer
+                      &nbsp;&nbsp;&nbsp;Editer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </Link>
                     <button
                       onClick={() => handleDelete(user.id)}

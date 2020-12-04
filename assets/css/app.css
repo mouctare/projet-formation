@@ -675,3 +675,14 @@ footer {
   border: 1px solid rgba(0, 0, 0, 0.1);
   outline: none;
 }
+.table.desc td {
+  vertical-align: middle;
+}
+
+.fontServStart {
+  background: #00ff00;
+}
+
+.fontServEnd {
+  background: #ffbf00;
+}

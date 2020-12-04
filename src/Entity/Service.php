@@ -86,7 +86,7 @@ class Service
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="services")
-     * @ORM\JoinColumn(nullable=false)
+     * 
      * @Groups({"services_read"})
      */
     private $user;

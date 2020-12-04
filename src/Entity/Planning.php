@@ -87,7 +87,7 @@ class Planning
 
      /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="plannings")
-     *  @Groups({"plannings_read","services_read", "plannings_write"})
+     *  @Groups({"plannings_read","services_read", "plannings_write", "plannings_write"})
      */
     private $site;
 
@@ -229,6 +229,13 @@ class Planning
     public function getStatus(): ?bool
     {
         return $this->status;
+    }
+
+    public function setStatus(?bool $status): self
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }
     

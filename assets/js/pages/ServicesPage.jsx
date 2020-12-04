@@ -28,20 +28,23 @@ const ServicesPage = () => {
         const roles = JSON.parse(window.localStorage.getItem("UserRole"));
         setisRoleUser(roles?.user);
         console.log("data from service", data);
+        let colorCell = "fontServStart";
         data.map((item) => {
           if (item.actif == true) {
             item.actif = "cours";
+            colorCell = "fontServStart";
           } else {
             item.actif = "terminé";
+            colorCell = "fontServEnd";
           }
-          data.actif = item.actif;
+
+          item.fontCellActif = colorCell;
           item.dateEnd = item.planning.dateEnd;
           item.dateStart = item.planning.dateStart;
         });
-
         setServices(data);
         setLoading(false);
-        console.log(" Nouvelle list ", data);
+        console.log(" Nouvelle list   obj = data", data);
       });
     } catch (error) {
       toast.error("Un erreur est survenue veuillez réessayer");
@@ -129,23 +132,14 @@ const ServicesPage = () => {
             <tbody>
               {paginatedServices.map((service) => (
                 <tr key={service.id}>
-                  <td>{service.user.firstName + service.user.lastName}</td>
+                  <td>{service.user?.firstName + service.user?.lastName}</td>
                   <td>{formatDate(service.dateStart)}</td>
                   <td>{formatDate(service.dateEnd)}</td>
                   <td>{service.description}</td>
-                  <td>{service.actif}</td>
+                  <td className={service.fontCellActif}>{service.actif}</td>
                   <td>{formatDate(service.createdAt)}</td>
                   <td>{formatDate(service.dateFin)}</td>
                   <td>{service.retard}</td>
-
-                  {/*  <td>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDelete(service.id)}
-                    >
-                      Supprimer
-                    </button>
-                  </td> */}
                 </tr>
               ))}
             </tbody>

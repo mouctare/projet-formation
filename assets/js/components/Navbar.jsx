@@ -97,11 +97,6 @@ const Navbar = ({ history }) => {
                 Rapports
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/plannings/:id/services">
-                Deplanning
-              </NavLink>
-            </li>
           </>
         )}
 

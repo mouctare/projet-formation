@@ -19,7 +19,8 @@ const ServicePage = ({ history }) => {
       const data1 = await PlanningsAPI.findAll();
       let data = [];
       data1.map((item) => {
-        if (item.status !== false) {
+        item.noteFinService = " box pour note fin de service";
+        if (item.status != false) {
           data.push(item);
         }
       });
@@ -33,6 +34,7 @@ const ServicePage = ({ history }) => {
             ...serviceDatas,
             {
               description: "",
+              noteFinService: "",
               actif: false,
               planningId: item.id,
             },
@@ -112,31 +114,30 @@ const ServicePage = ({ history }) => {
       actif: true,
       planning: path,
     };
-    let PlanningUpdate = [];
+    let planningUpdate = null;
     plannings.map((item) => {
       if ((item.id = id)) {
-        PlanningUpdate.status = true;
-        PlanningUpdate.dateStart = item.dateStart;
-        PlanningUpdate.dateEnd = item.dateEnd;
-        PlanningUpdate.user = item.user.id;
-        PlanningUpdate.site = item.site.id;
+        planningUpdate = {
+          status: true,
+          dateStart: item.dateStart,
+          dateEnd: item.dateEnd,
+          user: item.user.id,
+          site: item.site.id,
+        };
       }
     });
-    try {
-      await ServicesAPI.create(target)
-        .then((data) => console.log("Try..", data))
-        .catch((data) => console.log("Catch..", data));
-      console.log("target", target);
-      toast.success("La prise de service a bien été prise en compte");
-      if (PlanningUpdate != null) {
-        console.log(" service PlanningUpdate  ", PlanningUpdate);
-        await PlanningsAPI.update(id, PlanningUpdate).then(data).catch(data);
-        toast.success("La prise de service a bien été notié dans le planning");
-      }
-      history.replace("/services");
-    } catch (error) {
-      console.log(" service values from form priseServiceActive", service);
+
+    await ServicesAPI.create(target)
+      .then((data) => console.log("Try..", data))
+      .catch((data) => console.log("Catch..", data));
+    //console.log("priseDeService planningUpdate MAJ ", planningUpdate);
+    if (planningUpdate != null) {
+      await PlanningsAPI.update(id, planningUpdate).catch((err) => {
+        console.log("planning update error: ", err);
+      });
+      toast.success("La prise de service a bien été notié dans le planning");
     }
+    history.replace("/services");
   };
 
   /*
@@ -151,34 +152,37 @@ action Fin de service
       actif: true,
       planning: path,
     };
-    let PlanningUpdate = [];
+    let planningUpdate = null;
     plannings.map((item) => {
       if ((item.id = id)) {
-        PlanningUpdate.status = false;
-        PlanningUpdate.dateStart = item.dateStart;
-        PlanningUpdate.dateEnd = item.dateEnd;
-        PlanningUpdate.user = item.user.id;
-        PlanningUpdate.site = item.site.id;
+        planningUpdate = {
+          status: false,
+          dateStart: item.dateStart,
+          dateEnd: item.dateEnd,
+          user: item.user.id,
+          site: item.site.id,
+        };
       }
     });
-
     try {
-      console.log("target.planningId..", target.planningId);
+      //console.log("target.planningId..", target.planningId);
       await ServicesAPI.findPalanningService(target.planningId)
         .then((data) => {
           target.actif = false;
           ServicesAPI.update(data[0].id, target)
             .then((data) => console.log("Try..", data))
-            .catch((data) => console.log("Catch..", data));
+            .catch((err) => console.log("Catch..", err));
         })
         .catch((data) => console.log("Catch..", data));
-      //console.log("target", target);
-      toast.success("La prise de service a bien été prise en compte");
+      console.log("planningUpdate MAJ ", planningUpdate);
       // finaliser le service dans le planning : le status passe à False
-      if (PlanningUpdate != null) {
-        console.log(" service PlanningUpdate  ", PlanningUpdate);
-        await PlanningsAPI.update(id, PlanningUpdate).then(data).catch(data);
-        toast.success("La fin de service a bien été notié dans le planning");
+      if (planningUpdate != null) {
+        await PlanningsAPI.update(id, planningUpdate)
+          .then(data)
+          .catch((err) => {
+            console.log("planning update error: ", err);
+          });
+        toast.success("La fin de service a bien été notié au chef");
       }
       history.replace("/services");
     } catch (error) {
@@ -196,13 +200,21 @@ action Fin de service
         </div>
       }
       <>
-        <table className="table table-hover">
+        <table className="table desc table-hover">
           <thead>
             <tr>
               <th scope="col">Date de début de service</th>
               <th scope="col">Date de fin de service</th>
-              <th scope="col"> Action prise de service</th>
-              <th scope="col"> Description</th>
+
+              {plannings.map((pl) => {
+                pl.status != true && pl.status != false && (
+                  <th scope="col"> Note début service</th>
+                );
+              })}
+              {plannings.map((pl) => {
+                pl.status == true && <th scope="col"> Note Fin service </th>;
+              })}
+              <th scope="col"> Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -216,17 +228,29 @@ action Fin de service
                   <td>{formatDate(dateStart)}</td>
                   <td>{formatDate(dateEnd)}</td>
 
+                  {pl.status != true && pl.status != false && (
+                    <td>
+                      <Field
+                        name="description"
+                        placeholder="Description du rapport"
+                        onChange={(event) => handleChange(event, id)}
+                        value={service.description}
+                      />
+                    </td>
+                  )}
+                  {pl.status && (
+                    <td>
+                      <Field
+                        name="noteFinService"
+                        placeholder="noter remarques fin de service"
+                        onChange={(event) => handleChange(event, id)}
+                        value={service.noteFinService}
+                      />
+                    </td>
+                  )}
+
                   <td>
-                    <Field
-                      className="descript"
-                      name="description"
-                      placeholder="Description du rapport"
-                      onChange={(event) => handleChange(event, id)}
-                      value={service.description}
-                    />
-                  </td>
-                  <td>
-                    {pl.status != true && pl.status == false && (
+                    {pl.status != true && pl.status != false && (
                       <button
                         className="btn btn-sm btn-primary mr-1 "
                         hidden={false}
@@ -234,18 +258,19 @@ action Fin de service
                           validateService(event, id, pl["@id"])
                         }
                       >
-                        Vader votre prise de service
+                        Valider votre prise de service
                       </button>
                     )}
-
-                    <button
-                      className="btn btn-sm btn-warning"
-                      onClick={(event) =>
-                        validateFinService(event, id, pl["@id"])
-                      }
-                    >
-                      Valider votre fin de service
-                    </button>
+                    {pl.status && (
+                      <button
+                        className="btn btn-sm btn-warning"
+                        onClick={(event) =>
+                          validateFinService(event, id, pl["@id"])
+                        }
+                      >
+                        &nbsp; Valider votre fin de service&nbsp;&nbsp;
+                      </button>
+                    )}
                   </td>
                 </tr>
               );
