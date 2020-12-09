@@ -54,7 +54,7 @@ class Service
 
    
      /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      * @Groups({"services_read","plannings_read", "users_read"})
      * 
      */
@@ -90,6 +90,19 @@ class Service
      * @Groups({"services_read"})
      */
     private $user;
+
+    /**
+     * @ORM\Column(type="string", length=5000, nullable=true)
+     *  @Groups({"services_read","plannings_read", "users_read"})
+     */
+    private $noteFinService;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="services")
+     * @Groups({"services_read"})
+     * 
+     */
+    private $site;
  
    /**
    * @Groups({"services_read"})
@@ -177,6 +190,30 @@ class Service
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getNoteFinService(): ?string
+    {
+        return $this->noteFinService;
+    }
+
+    public function setNoteFinService(?string $noteFinService): self
+    {
+        $this->noteFinService = $noteFinService;
+
+        return $this;
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): self
+    {
+        $this->site = $site;
 
         return $this;
     }

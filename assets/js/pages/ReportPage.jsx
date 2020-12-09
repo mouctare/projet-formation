@@ -101,14 +101,6 @@ const ReportPage = ({ history }) => {
           error={errors.description}
         />
 
-        {/* <Field name="image"
-        placeholder="Image" 
-        label="Image" 
-        type="file"
-        onChange={handleChange} 
-       value={report.image}  
-       error={errors.image} />       */}
-
         <Select
           name="site"
           label="site"

@@ -30,9 +30,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *    subresourceOperations={
  *        "reports_get_subresource"={"path"="/sites/{id}/rapports"},
  *        "plannings_get_subresource"={"path"="/sites/{id}/plannings"},
+ *       "services_get_subresource"={"path"="/sites/{id}/services"},
  * },
  *  normalizationContext={ "groups"={"sites_read"}},
- *  denormalizationContext={"disable_type_enforcement"=true}
+ *  
  * )
  */
 class Site
@@ -41,20 +42,20 @@ class Site
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Groups({"sites_read","plannings_read","reports_read", "services_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Groups({"sites_read","plannings_read","reports_read", "services_read"})
      * @Assert\NotBlank(message="Le nom du site est obligatiore !")
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Groups({"sites_read","plannings_read","reports_read", "services_read"})
      * @Assert\NotBlank(message="Le numero de  rue du site est obligatiore !")
      * 
      */
@@ -62,20 +63,20 @@ class Site
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Groups({"sites_read","plannings_read","reports_read", "services_read"})
      * @Assert\NotBlank(message="Le nom de  rue du site est obligatiore !")
      */
     private $streetName;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Groups({"sites_read","plannings_read","reports_read", "services_read"})
      */
     private $buildingName;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Groups({"sites_read","plannings_read","reports_read", "services_read"})
      * @Assert\NotBlank(message="Le code postal de la ville du site est obligatiore !")
      
      */
@@ -83,7 +84,7 @@ class Site
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"sites_read","plannings_read","reports_read"})
+     * @Groups({"sites_read","plannings_read","reports_read", "services_read"})
      * @Assert\NotBlank(message="La ville du site est obligatiore !")
      * 
      */
@@ -104,10 +105,18 @@ class Site
      */
     private $plannings;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Service::class, mappedBy="site" , cascade="persist")
+     *  @Groups({"sites_read"})
+     * @ApiSubresource
+     */
+    private $services;
+
     public function __construct()
     {
         $this->reports = new ArrayCollection();
         $this->plannings = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -243,6 +252,37 @@ class Site
             // set the owning side to null (unless already changed)
             if ($planning->getSite() === $this) {
                 $planning->setSite(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Service[]
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): self
+    {
+        if (!$this->services->contains($service)) {
+            $this->services[] = $service;
+            $service->setSite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): self
+    {
+        if ($this->services->contains($service)) {
+            $this->services->removeElement($service);
+            // set the owning side to null (unless already changed)
+            if ($service->getSite() === $this) {
+                $service->setSite(null);
             }
         }
 

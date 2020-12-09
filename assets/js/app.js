@@ -77,7 +77,7 @@ const App = () => {
           <Switch>
             <Route path="/login" component={LoginPage} />
             <Route path="/about" component={AboutPage} />
-            {/*    <PrivateRoute path="/services/:id" component={ServicePage} /> */}
+            <PrivateRoute path="/page/" component={ServicePage} />
             <PrivateRoute path="/services" component={ServicesPage} />
             <PrivateRoute path="/rapports/:id" component={ReportPage} />
             <PrivateRoute path="/rapports" component={ReportsPage} />

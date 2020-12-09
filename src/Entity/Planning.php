@@ -80,14 +80,14 @@ class Planning
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="plannings")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"plannings_read","services_read"})
+     * @Groups({"plannings_read","services_read", "plannings_write"})
      */
 
     private $user;
 
      /**
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="plannings")
-     *  @Groups({"plannings_read","services_read", "plannings_write", "plannings_write"})
+     *  @Groups({"plannings_read","services_read", "plannings_write"})
      */
     private $site;
 
@@ -105,11 +105,7 @@ class Planning
      *@Groups({"plannings_read", "plannings_write"}) 
      */
     private $services;
-     /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"plannings_read", "plannings_write", "services_read"}) 
-     */
-    private $status;
+    
 
     
 
@@ -226,16 +222,6 @@ class Planning
 
         return $this;
     }
-    public function getStatus(): ?bool
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?bool $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
+  
 }
     

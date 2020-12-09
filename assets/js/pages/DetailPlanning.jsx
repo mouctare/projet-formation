@@ -4,61 +4,51 @@ import Field from "../components/forms/Field";
 import { formatDate } from "../services/FormatDateAPI";
 import PlanningsAPI from "../services/PlanningsAPI";
 import ServicesAPI from "../services/ServicesAPI";
-import { Link } from "react-router-dom";
 
 const ServicePage = ({ history, match }) => {
   const { id } = match.params;
-  const [services, setServices] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [planning, setPlanning] = useState([]);
   const [userConnecte, setUserConnecte] = useState("");
-  const [nbPlanning, setNbPlanning] = useState("");
+  const [sericeStarted, setSserviceStarteds] = useState(false);
+  const [idService, setIdServices] = useState(null);
+  const [service, setServices] = useState({});
 
-  const fetchServices = async (id) => {
-    console.log("id: " + id);
+  const fetchPlannings = async () => {
     try {
-      await findPlanningServices(id);
-      setPlannings(data);
-      //  console.log("***" data);
-      // setLoading(false);
+      const data = await PlanningsAPI.find(id);
+
+      setUserConnecte(data.user.lastName + " " + data.user.firstName);
+      data.siteId = data.site.id;
+      setPlanning(data);
+      setLoading(false);
     } catch (error) {
-      toast.error("Les services n'ont  pas pu étre chargés");
-      // history.replace("/plannings");
+      toast.error("Imposssible de charger les plannings");
     }
-
-    let test = true;
-    let serviceDatas = [];
-    test &&
-      data.map((item) => {
-        setUserConnecte(item.user.lastName + " " + item.user.firstName);
-        test = false;
-        serviceDatas = [
-          ...serviceDatas,
-          {
-            description: "",
-            actif: false,
-            planningId: item.id,
-          },
-        ];
-      });
-
-    let message = "";
-    if (data.length > 1) {
-      message = " voici votre liste de plannings";
-    }
-    if (data.length == 1) {
-      message = " voici votre planning";
-    }
-    if (data.length == 0) {
-      message = " vous n'avez aucun planning pour l'instant";
-    }
-
-    setLoading(false);
   };
 
   useEffect(() => {
-    fetchServices(id);
-  }, [id]);
+    fetchPlannings();
+    fetchPlanningInServices();
+  }, []);
+
+  const fetchPlanningInServices = async () => {
+    try {
+      const data = await ServicesAPI.findPalanningService(id);
+
+      if (data.length > 0) {
+        setSserviceStarteds(true);
+        console.log("dta du service  encours", data[0]);
+        setIdServices(data[0].id);
+      }
+      setLoading(false);
+    } catch (error) {
+      toast.error(
+        "Le planning  dans service n'apas pu étre chargé n'a pas pu étre chargé"
+      );
+    }
+  };
 
   /**
    * Pour afficher le bouton de prise de service
@@ -79,78 +69,119 @@ const ServicePage = ({ history, match }) => {
     );
   }; */
 
-  const handleChange = ({ currentTarget }, id) => {
+  const handleChange = ({ currentTarget }) => {
     const { name, value } = currentTarget;
-    const target = service.find((element) => {
-      return id === element.planningId;
-    });
-    const results = service.filter((element) => {
-      return id != element.planningId;
-    });
-    setServices([
-      ...results,
-      {
-        ...target,
-        [name]: value,
-      },
-    ]);
+    setServices({ ...service, [name]: value });
   };
-
-  let isVisible = false;
 
   /**
    * Effectuer la prise de service éffective
    */
-
-  const validateService = async (event, id, path) => {
+  const validateService = async (event, id, idSite) => {
     event.preventDefault();
-    isVisible = true;
-    //console.log(" isVisible  = + = id ", isVisible + " " + id);
-    const target = {
-      ...service.find((element) => {
-        return id === element.planningId;
-      }),
-      actif: true,
-      planning: path,
-    };
-
-    try {
-      await ServicesAPI.create(target)
-        .then((data) => console.log("Try..", data))
-        .catch((data) => console.log("Catch..", data));
-      // console.log("target", target);
-
-      toast.success("La prise de service a bien été prise en compte");
-      history.replace("/services");
-    } catch (error) {
-      console.log(" service values from form priseServiceActive", service);
-    }
+    service.actif = true;
+    service.planningId = id;
+    service.siteId = idSite;
+    console.log(" service obj inserted ==> ", service);
+    await ServicesAPI.create(service)
+      .then((data) => console.log("Try..", data))
+      .catch((err) => console.log("Catch..", err));
+    toast.success("La prise de service a bien été prise en compte");
+    history.replace("/plannings");
   };
 
+  /*
+action Fin de service
+*/
+  const validateFinService = async (event, id, idSite) => {
+    event.preventDefault();
+    service.actif = false;
+    service.planningId = id;
+    service.siteId = idSite;
+
+    console.log(" fin de service vlider  &   ==> ", service);
+    console.log(" fin de service vlider  &  idService ==> ", idService);
+    if (idService != null) {
+      await ServicesAPI.update(idService, service);
+      console.log("service update", service);
+    }
+    toast.success("La fin prise de service a bien été prise en compte");
+    history.replace("/plannings");
+  };
+  /*   service.actif = false;
+    service.planningId = id;
+    service.siteId = idSite;
+    if (idService != null) {
+      ServicesAPI.update(idService, service);
+    }
+    toast.success("La fin prise de service a bien été prise en compte");
+    history.replace("/plannings");
+  };
+ */
   return (
     <>
       {
-        <div className="mb-5 d-flex justify-content-between align-items-center"></div>
+        <div className="mb-5 d-flex justify-content-between align-items-center">
+          <h3>Bonjour Mr. {userConnecte}</h3>
+        </div>
       }
       <>
-        <table className="table table-hover">
+        <table className="table desc table-hover">
           <thead>
             <tr>
-              <th scope="col">Date de début de service</th>
-              <th scope="col">Date de fin de service</th>
-              <th scope="col"> Action prise de service</th>
-              <th scope="col"> Description</th>
+              {!sericeStarted && <th scope="col"> Note début service</th>}
+              {sericeStarted && <th scope="col"> Note Fin service </th>}
+              <th scope="col"> Actions</th>
             </tr>
           </thead>
           <tbody>
-            {services.map((service) => {
-              return (
-                <tr key={id}>
-                  <td>{formatDate(service.actif)}</td>
-                  <td>{formatDate(service.description)}</td>
-                </tr>
-              );
-            })}
+            <tr>
+              {!sericeStarted && (
+                <td>
+                  <Field
+                    name="description"
+                    placeholder="Description du rapport"
+                    onChange={handleChange}
+                    value={service.description}
+                  />
+                </td>
+              )}
+              {sericeStarted && (
+                <td>
+                  <Field
+                    name="noteFinService"
+                    placeholder="Notes fin de service"
+                    onChange={handleChange}
+                    value={service.noteFinService}
+                  />
+                </td>
+              )}
+
+              <td>
+                {!sericeStarted && (
+                  <button
+                    className="btn btn-sm btn-primary mr-1 "
+                    hidden={false}
+                    onClick={(event) =>
+                      validateService(event, planning.id, planning.siteId)
+                    }
+                  >
+                    Valider votre prise de service
+                  </button>
+                )}
+
+                {sericeStarted && (
+                  <button
+                    className="btn btn-sm btn-warning"
+                    onClick={(event) =>
+                      validateFinService(event, planning.id, planning.siteId)
+                    }
+                  >
+                    &nbsp; Valider votre fin de service&nbsp;&nbsp;
+                  </button>
+                )}
+              </td>
+            </tr>
           </tbody>
         </table>
       </>

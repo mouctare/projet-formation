@@ -6,19 +6,12 @@ import { formatDate } from "../services/FormatDateAPI";
 import ServicesAPI from "../services/ServicesAPI";
 import ServicePage from "./ServicePage";
 
-const STATUS_CLASSES = {
-  ENCOURS: "success",
-  TERMINE: "primary",
-  ABSCEND: "danger",
-};
-
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState([1]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [isRoleUser, setisRoleUser] = useState(false);
-  const [plannings, setPlannings] = useState([]);
 
   const itemsPerPage = 10;
 
@@ -98,7 +91,7 @@ const ServicesPage = () => {
     <>
       {!isRoleUser && (
         <div className="mb-3 d-flex justify-content-between align-items-center">
-          <h3>Liste des services En cours ou terminés </h3>
+          <h3>Etat des services ! </h3>
         </div>
       )}
       {!isRoleUser && (
@@ -121,7 +114,9 @@ const ServicesPage = () => {
               <th>Début service</th>
               <th>Fin service</th>
               <th>Description</th>
-              <th>Etat service</th>
+              <th>Nom du site </th>
+              <th>Ville </th>
+              <th>Statut service</th>
               <th>crétion service</th>
               <th>date actuelle</th>
               <th>Retard / Heures sup </th>
@@ -136,6 +131,8 @@ const ServicesPage = () => {
                   <td>{formatDate(service.dateStart)}</td>
                   <td>{formatDate(service.dateEnd)}</td>
                   <td>{service.description}</td>
+                  <td>{service.site?.name}</td>
+                  <td>{service.site.city}</td>
                   <td className={service.fontCellActif}>{service.actif}</td>
                   <td>{formatDate(service.createdAt)}</td>
                   <td>{formatDate(service.dateFin)}</td>
@@ -147,11 +144,7 @@ const ServicesPage = () => {
         </table>
       )}
 
-      {isRoleUser && (
-        <div>
-          <ServicePage />
-        </div>
-      )}
+      {isRoleUser && <div>{/*  <ServicePage /> */}</div>}
 
       {loading && <TableLoader />}
       {itemsPerPage < filteredServices.length && (

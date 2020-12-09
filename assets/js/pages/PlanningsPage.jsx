@@ -143,7 +143,7 @@ const PlanningsPage = (props) => {
                     <Link
                       to={"/plannings/" + planning.id}
                       className="btn btn-sm btn-primary mr-2"
-                      // hidden={planning.services.length > 0}
+                      hidden={planning.services.length > 0}
                     >
                       Editer
                     </Link>

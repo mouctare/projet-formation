@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import AuthAPI from "../services/AuthAPI";
 import { NavLink, Link } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
@@ -6,10 +6,13 @@ import { toast } from "react-toastify";
 
 const Navbar = ({ history }) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const [isRoleUser, setisRoleUser] = useState(false);
 
   const handleLogout = () => {
     AuthAPI.logout();
     setIsAuthenticated(false);
+    const roles = JSON.parse(window.localStorage.getItem("UserRole"));
+    setisRoleUser(roles?.user);
     toast.info("Vous ete désormais deconnecté ");
     history.push("/login");
   };
@@ -67,11 +70,13 @@ const Navbar = ({ history }) => {
 
         {isAuthenticated && (
           <>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/agents">
-                Agents
-              </NavLink>
-            </li>
+            {!isRoleUser && (
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/agents">
+                  Agents
+                </NavLink>
+              </li>
+            )}
             <li className="nav-item">
               <NavLink className="nav-link" to="/plannings">
                 Plannings
@@ -82,9 +87,16 @@ const Navbar = ({ history }) => {
                 Idisponibilités
               </NavLink>
             </li>
+            {!isRoleUser && (
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/services">
+                  Services
+                </NavLink>
+              </li>
+            )}
             <li className="nav-item">
-              <NavLink className="nav-link" to="/services">
-                Services
+              <NavLink className="nav-link" to="/page">
+                Gestion
               </NavLink>
             </li>
             <li className="nav-item">
