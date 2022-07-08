@@ -20,7 +20,7 @@
         "@material-ui/pickers": "^3.2.10",
         "axios": "0.18.0",
         "jwt-decode": "^2.2.0",
-        "moment": "^2.27.0",
+        "moment": "^2.29.4",
         "react": "16.8.6",
         "react-bootstrap": "^1.2.2",
         "react-content-loader": "^5.1.0",
